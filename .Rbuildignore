@@ -1,0 +1,10 @@
+^\.Rbuildignore$
+^\.Rproj\.user$
+^.*\.Rproj$
+^\.claude/
+^README\.md$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^\.github$
+^codecov\.yml$

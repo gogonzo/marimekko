@@ -1,0 +1,68 @@
+name: Claude Code Review
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+permissions:
+  contents: read
+  pull-requests: write
+  id-token: write
+
+jobs:
+  review:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Check if latest commit skips review
+        id: skip
+        run: |
+          msg=$(git log -1 --format='%s')
+          if [[ "$msg" == fix:* ]] || [[ "$msg" == quickfix:* ]] || [[ "$msg" == *"[skip-review]"* ]]; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Wait for all other checks to pass
+        if: steps.skip.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          SHA=${{ github.event.pull_request.head.sha }}
+          THIS_JOB="review"
+          for i in $(seq 1 60); do
+            RESULT=$(gh api "repos/${{ github.repository }}/commits/${SHA}/check-runs" \
+              --jq "[.check_runs[] | select(.name != \"${THIS_JOB}\")] | {total: length, completed: [.[] | select(.status == \"completed\")] | length, failed: [.[] | select(.conclusion != null and .conclusion != \"success\" and .conclusion != \"skipped\" and .conclusion != \"neutral\")] | length}")
+            TOTAL=$(echo "$RESULT" | jq .total)
+            COMPLETED=$(echo "$RESULT" | jq .completed)
+            FAILED=$(echo "$RESULT" | jq .failed)
+            echo "Check runs: ${COMPLETED}/${TOTAL} completed, ${FAILED} failed"
+            if [ "$FAILED" -gt 0 ]; then
+              echo "::error::Some checks failed — skipping review."
+              exit 1
+            fi
+            if [ "$TOTAL" -gt 0 ] && [ "$COMPLETED" -eq "$TOTAL" ]; then
+              echo "All checks passed."
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "::error::Timed out waiting for checks (30 min)."
+          exit 1
+
+      - uses: anthropics/claude-code-action@v1
+        if: steps.skip.outputs.skip != 'true'
+        with:
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_args: |
+            --model claude-haiku-4-5-20251001
+            --allowedTools "Bash(gh pr comment *),Bash(gh pr review *),Read,Glob,Grep"
+            --max-turns 10
+          prompt: |
+            /review
+
+            Post your review on PR #${{ github.event.pull_request.number }} using `gh pr review` or `gh pr comment`.

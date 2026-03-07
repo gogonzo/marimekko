@@ -1,0 +1,81 @@
+url: ~
+
+template:
+  bootstrap: 5
+  bootswatch: cosmo
+  bslib:
+    primary: "#2B6CB0"
+    border-radius: 0.3rem
+    btn-border-radius: 0.3rem
+
+home:
+  title: "marimekko: marimekko and Mosaic Plots for ggplot2"
+  description: >
+    Create marimekko (mosaic) plots as native ggplot2 layers.
+    Column widths encode marginal proportions and segment heights encode
+    conditional proportions. A simpler alternative to ggmosaic.
+
+navbar:
+  structure:
+    left:  [intro, reference, articles]
+    right: [search, github]
+  components:
+    intro:
+      text: Get started
+      href: articles/getting-started.html
+    articles:
+      text: Articles
+      menu:
+        - text: Getting started
+          href: articles/getting-started.html
+        - text: Advanced features
+          href: articles/advanced-features.html
+        - text: Migration from ggmosaic to marimekko
+          href: articles/migration-from-ggmosaic-to-marimekko.html
+
+reference:
+  - title: "Plot layers"
+    desc: >
+      Core geom and stat functions for building marimekko plots.
+    contents:
+      - geom_marimekko
+      - geom_marimekko_text
+      - geom_marimekko_label
+      - geom_marimekko_jitter
+      - geom_marimekko_multi
+
+  - title: "Scales"
+    desc: >
+      Custom scales that label axes with category names.
+    contents:
+      - scale_x_marimekko
+      - scale_y_marimekko
+
+  - title: "Annotations"
+    desc: >
+      Annotations for statistical tests.
+    contents:
+      - annotate_chisq
+
+  - title: "Utilities"
+    desc: >
+      Helper functions for data extraction and theming.
+    contents:
+      - fortify_marimekko
+      - theme_marimekko
+
+  - title: "ggproto objects"
+    desc: >
+      Underlying ggproto classes for advanced customization.
+    contents:
+      - Statmarimekko
+      - StatmarimekkoJitter
+      - StatmarimekkoMulti
+
+articles:
+  - title: "Tutorials"
+    navbar: ~
+    contents:
+      - getting-started
+      - advanced-features
+      - migration-from-ggmosaic-to-marimekko

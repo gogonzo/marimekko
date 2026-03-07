@@ -1,0 +1,214 @@
+---
+title: "Getting started with marimekko"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Getting started with marimekko}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 4.5
+)
+```
+
+## What is a marimekko plot?
+
+A marimekko (or mosaic) plot is a two-dimensional visualization of a
+contingency table. Each column represents a category of one variable, and
+the segments within each column represent categories of a second variable:
+- **Column widths** are proportional to the marginal counts of the
+  x variable.
+- **Segment heights** within each column are proportional to the
+  conditional counts of the fill variable given x.
+
+The `marimekko` package provides this as a native ggplot2 layer, so you
+can combine it with any other ggplot2 functionality (facets, themes,
+annotations, etc.).
+
+## Installation
+
+```{r, eval = FALSE}
+# From CRAN
+install.packages("marimekko")
+
+# From GitHub (when published)
+devtools::install_github("gogonzo/marimekko")
+```
+
+## Your first marimekko plot
+
+The built-in `Titanic` dataset records survival counts by class, sex, and
+age. Let's visualize survival by passenger class.
+
+```{r basic}
+library(ggplot2)
+library(marimekko)
+
+titanic <- as.data.frame(Titanic)
+
+ggplot(titanic) +
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+  scale_x_marimekko() +
+  labs(title = "Titanic survival by class", y = "Proportion")
+```
+
+Three components are at work:
+
+1. **`geom_marimekko()`** computes tile positions from your data. The
+   `formula` defines the variables (columns and segments), `fill` defines
+   the segment colours, and `weight` provides the counts.
+2. **`scale_x_marimekko()`** labels the x-axis with category names at
+   each column's midpoint.
+3. Standard ggplot2 functions (`labs()`, `theme()`, etc.) work as usual.
+
+## Aesthetics
+
+`geom_marimekko()` understands these aesthetics and parameters:
+
+| Parameter / Aesthetic | Required | Description |
+|-----------------------|----------|-------------|
+| `formula`             | yes      | Formula specifying variables, e.g. `~ X \| Y` |
+| `fill`                | no       | Categorical variable for segment colours (defaults to last formula variable) |
+| `weight`              | no       | Numeric weight/count (default 1) |
+
+If your data already has one row per observation (no aggregation needed),
+omit `weight`:
+
+```{r unweighted}
+ggplot(mtcars) +
+  geom_marimekko(aes(x = factor(cyl), fill = factor(gear))) +
+  scale_x_marimekko() +
+  labs(x = "Cylinders", fill = "Gears")
+```
+
+## Gap control
+
+The `gap` parameter controls spacing between tiles as a fraction of the
+plot area. Default is `0.01`.
+
+```{r gap}
+ggplot(titanic) +
+  geom_marimekko(aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived, gap = 0.03
+  ) +
+  scale_x_marimekko() +
+  labs(title = "Wider gaps (gap = 0.03)")
+```
+
+Set `gap = 0` for a seamless mosaic:
+
+```{r no-gap}
+ggplot(titanic) +
+  geom_marimekko(aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived, gap = 0
+  ) +
+  scale_x_marimekko() +
+  labs(title = "No gaps")
+```
+
+## Marginal percentages
+
+`scale_x_marimekko()` can append marginal percentages to the x-axis
+labels:
+
+```{r pct}
+ggplot(titanic) +
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+  scale_x_marimekko(show_percentages = TRUE) +
+  labs(y = "Proportion")
+```
+
+## Adding text labels
+
+Use `geom_marimekko_text()` (or `geom_marimekko_label()` for a boxed
+version) to place labels at tile centers. The `label` aesthetic can
+reference computed variables via `after_stat()`:
+
+- `weight` -- the aggregated count for the tile
+- `cond_prop` -- the conditional proportion within the column
+- `x_label` -- the x category name
+- `fill_label` -- the fill category name
+
+```{r text-labels}
+ggplot(titanic) +
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+  geom_marimekko_text(aes(
+    x = Class, fill = Survived, weight = Freq,
+    label = after_stat(weight)
+  ), colour = "white") +
+  scale_x_marimekko() +
+  labs(title = "Counts inside tiles")
+```
+
+Percentage labels:
+
+```{r pct-labels}
+ggplot(titanic) +
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+  geom_marimekko_text(aes(
+    x = Class, fill = Survived, weight = Freq,
+    label = after_stat(paste0(round(cond_prop * 100), "%"))
+  ), colour = "white", size = 3) +
+  scale_x_marimekko()
+```
+
+## Theming
+
+`theme_marimekko()` provides a clean, minimal theme that removes
+distracting x-axis gridlines:
+
+```{r theme}
+ggplot(titanic) +
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+  scale_x_marimekko() +
+  theme_marimekko() +
+  labs(title = "With theme_marimekko()")
+```
+
+Since it builds on `theme_minimal()`, you can override any element:
+
+```{r theme-custom}
+ggplot(titanic) +
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+  scale_x_marimekko() +
+  theme_marimekko() +
+  theme(legend.position = "bottom")
+```
+
+## Faceting
+
+`geom_marimekko()` supports ggplot2 faceting. Each panel gets its own
+independently proportioned mosaic:
+
+```{r facet}
+ggplot(as.data.frame(Titanic)) +
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+  scale_x_marimekko() +
+  facet_wrap(~Sex) +
+  labs(title = "Survival by class, faceted by sex")
+```
+
+## Custom colours
+
+Since `fill` is a standard ggplot2 aesthetic, any fill scale works:
+
+```{r colours}
+haireye <- as.data.frame(HairEyeColor[, , 1])
+
+ggplot(haireye) +
+  geom_marimekko(aes(fill = Eye, weight = Freq), formula = ~ Hair | Eye) +
+  scale_x_marimekko() +
+  scale_fill_brewer(palette = "Set2") +
+  labs(title = "Hair vs Eye colour (males)")
+```
+
+## Next steps
+
+See `vignette("advanced-features")` for spine plots, Pearson residuals,
+jittered points, three-variable mosaics, and programmatic data extraction
+with `fortify_marimekko()`.

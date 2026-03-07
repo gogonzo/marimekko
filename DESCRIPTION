@@ -1,0 +1,39 @@
+Package: marimekko
+Title: marimekko and Mosaic Plots for 'ggplot2'
+Version: 0.1.0
+Authors@R:
+    person("Dawid", "Kaledkowski", role = c("aut", "cre"),
+           email = "dawid.kaledkowski@gmail.com")
+Description: Create marimekko (mosaic) plots as a 'ggplot2' layer.
+    Column widths encode marginal proportions of one categorical variable
+    and segment heights encode conditional proportions of a second
+    categorical variable. Provides a simpler alternative to 'ggmosaic'.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.3
+Depends:
+    R (>= 4.1.0)
+Imports:
+    ggplot2 (>= 3.5.0),
+    rlang
+Suggests:
+    knitr,
+    pkgdown,
+    plotly,
+    rmarkdown,
+    testthat (>= 3.0.0),
+    vdiffr (>= 1.0.0)
+VignetteBuilder: knitr
+Config/testthat/edition: 3
+Collate:
+    'mekko-package.R'
+    'annotate-chisq.R'
+    'fortify-marimekko.R'
+    'stat-marimekko.R'
+    'geom-marimekko-jitter.R'
+    'geom-marimekko-text.R'
+    'geom-marimekko.R'
+    'scale-x-marimekko.R'
+    'scale-y-marimekko.R'
+    'theme-marimekko.R'
