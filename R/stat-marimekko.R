@@ -1,4 +1,4 @@
-#' @include mekko-package.R
+#' @include marimekko-package.R
 #' @keywords internal
 StatmarimekkoBase <- ggproto("StatmarimekkoBase", Stat,
   required_aes = c("x_var", "fill"),

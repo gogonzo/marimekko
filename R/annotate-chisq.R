@@ -1,6 +1,6 @@
 #' Annotate a marimekko plot with a chi-squared test
 #'
-#' @include mekko-package.R
+#' @include marimekko-package.R
 #'
 #' `annotate_chisq()` runs a chi-squared test of independence on the
 #' contingency table defined by `x` and `fill` (weighted by `weight`)

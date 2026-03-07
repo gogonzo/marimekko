@@ -1,20 +1,21 @@
 # marimekko
 
+[![R-CMD-check](https://github.com/gogonzo/marimekko/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gogonzo/marimekko/actions/workflows/R-CMD-check.yaml)
+[![codecov](https://codecov.io/gh/gogonzo/marimekko/graph/badge.svg)](https://codecov.io/gh/gogonzo/marimekko)
+[![CRAN downloads](https://cranlogs.r-pkg.org/badges/marimekko)](https://cran.r-project.org/package=marimekko)
+
 marimekko (mosaic) plots for **ggplot2**.
 
-Column widths encode the marginal distribution of one categorical variable
-and segment heights encode the conditional distribution of a second
-categorical variable. A simpler, lighter alternative to
+A one-sided formula controls the variable hierarchy and split directions.
+Column widths and segment heights encode marginal and conditional
+proportions of categorical variables. A simpler, lighter alternative to
 [ggmosaic](https://github.com/haleyjeppson/ggmosaic).
 
 ## Installation
 
 ```r
-# Install from a local clone
-devtools::install()
-
-# Or from GitHub (when published)
-# devtools::install_github("<user>/marimekko")
+# Install from GitHub
+devtools::install_github("gogonzo/marimekko")
 ```
 
 ## Quick start
@@ -26,30 +27,47 @@ library(marimekko)
 titanic <- as.data.frame(Titanic)
 
 ggplot(titanic) +
-  geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived
+  ) +
   scale_x_marimekko() +
   labs(title = "Titanic survival by class", y = "Proportion") +
   theme_marimekko()
 ```
 
+## Formula syntax
+
+The formula encodes both variable order and split direction:
+
+| Formula             | Splits                           | Pattern           |
+| ------------------- | -------------------------------- | ----------------- |
+| `~ a \| b`          | h(a), v(b)                       | Standard mosaic   |
+| `~ a \| b \| c`     | h(a), v(b), h(c)                 | Alternating       |
+| `~ a + b \| c`      | h(a), h(b), v(c)                 | Double decker     |
+| `~ a \| b + c`      | h(a), v(b), v(c)                 | Multiple vertical |
+
+- `|` alternates split direction (h → v → h → ...)
+- `+` groups variables at the same level (same direction)
+- Arbitrary expressions work: `~ factor(cyl) | cut(mpg, breaks = 3)`
+
 ## Features
 
-| Feature                          | Function                     |
-| -------------------------------- | ---------------------------- |
-| Core marimekko plot              | `geom_marimekko()`           |
-| Text labels on tiles             | `geom_marimekko_text()`      |
-| Labels with background box       | `geom_marimekko_label()`     |
-| Jittered points in tiles         | `geom_marimekko_jitter()`    |
-| 3-variable nested mosaic         | `geom_marimekko_multi()`     |
-| Category labels on x-axis        | `scale_x_marimekko()`        |
-| Fill labels on y-axis            | `scale_y_marimekko()`        |
-| Chi-squared test annotation      | `annotate_chisq()`           |
-| Compute tiles without plotting   | `fortify_marimekko()`        |
-| Minimal mosaic theme             | `theme_marimekko()`          |
-| Equal-width columns (spine plot) | `standardize = TRUE`         |
-| Pearson residual shading         | `residuals = TRUE`           |
-| Independent x/y gaps             | `gap_x` / `gap_y`            |
-| Plotly tooltip support           | `.tooltip` computed variable |
+| Feature                          | Function / Parameter           |
+| -------------------------------- | ------------------------------ |
+| Core marimekko plot              | `geom_marimekko()`             |
+| Text labels on tiles             | `geom_marimekko_text()`        |
+| Labels with background box       | `geom_marimekko_label()`       |
+| Jittered points in tiles         | `geom_marimekko_jitter()`      |
+| Category labels on x-axis        | `scale_x_marimekko()`          |
+| Fill labels on y-axis            | `scale_y_marimekko()`          |
+| Chi-squared test annotation      | `annotate_chisq()`             |
+| Compute tiles without plotting   | `fortify_marimekko()`          |
+| Minimal mosaic theme             | `theme_marimekko()`            |
+| Pearson residual shading         | `after_stat(.resid)`           |
+| Conditional proportion shading   | `after_stat(.proportion)`      |
+| Independent x/y gaps             | `gap_x` / `gap_y`             |
+| Plotly interactivity             | `plotly::ggplotly()`           |
 
 ## Examples
 
@@ -57,7 +75,10 @@ ggplot(titanic) +
 
 ```r
 ggplot(titanic) +
-  geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived
+  ) +
   scale_x_marimekko(show_percentages = TRUE) +
   theme_marimekko()
 ```
@@ -66,7 +87,10 @@ ggplot(titanic) +
 
 ```r
 ggplot(titanic) +
-  geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived
+  ) +
   geom_marimekko_text(aes(
     x = Class, fill = Survived, weight = Freq,
     label = after_stat(weight)
@@ -74,24 +98,19 @@ ggplot(titanic) +
   scale_x_marimekko()
 ```
 
-### Spine plot (equal-width columns)
-
-```r
-ggplot(titanic) +
-  geom_marimekko(aes(x = Class, fill = Survived, weight = Freq),
-                 standardize = TRUE) +
-  scale_x_marimekko() +
-  labs(title = "Spine plot")
-```
-
 ### Residual shading
 
 ```r
 ggplot(titanic) +
-  geom_marimekko(aes(x = Class, fill = Survived, weight = Freq,
-                     alpha = after_stat(abs(.resid))),
-                 residuals = TRUE) +
+  geom_marimekko(
+    aes(
+      fill = Survived, weight = Freq,
+      alpha = after_stat(abs(.resid))
+    ),
+    formula = ~ Class | Survived
+  ) +
   scale_x_marimekko() +
+  scale_alpha_continuous(range = c(0.3, 1), guide = "none") +
   annotate_chisq(titanic, Class, Survived, weight = Freq)
 ```
 
@@ -102,9 +121,13 @@ ucb <- as.data.frame(UCBAdmissions)
 ucb_a <- ucb[ucb$Dept == "A", ]
 
 ggplot(ucb_a) +
-  geom_marimekko(aes(x = Gender, fill = Admit, weight = Freq)) +
+  geom_marimekko(
+    aes(fill = Admit, weight = Freq),
+    formula = ~ Gender | Admit, alpha = 0.3
+  ) +
   geom_marimekko_jitter(aes(x = Gender, fill = Admit, weight = Freq),
-                        seed = 42) +
+    seed = 42
+  ) +
   scale_x_marimekko()
 ```
 
@@ -112,9 +135,10 @@ ggplot(ucb_a) +
 
 ```r
 ggplot(titanic) +
-  geom_marimekko_multi(aes(
-    x = Class, split = Sex, fill = Survived, weight = Freq
-  )) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Sex | Survived
+  ) +
   scale_x_marimekko()
 ```
 
@@ -122,7 +146,10 @@ ggplot(titanic) +
 
 ```r
 ggplot(as.data.frame(Titanic)) +
-  geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived
+  ) +
   scale_x_marimekko() +
   facet_wrap(~Sex)
 ```
@@ -131,28 +158,33 @@ ggplot(as.data.frame(Titanic)) +
 
 ```r
 ggplot(titanic) +
-  geom_marimekko(aes(x = Class, fill = Survived, weight = Freq),
-                 gap_x = 0.04, gap_y = 0) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived, gap_x = 0.04, gap_y = 0
+  ) +
   scale_x_marimekko()
 ```
 
-### Plotly interactive tooltips
+### Plotly interactivity
 
 ```r
 library(plotly)
 
 p <- ggplot(titanic) +
-  geom_marimekko(aes(x = Class, fill = Survived, weight = Freq,
-                     text = after_stat(.tooltip))) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived
+  ) +
   scale_x_marimekko()
-ggplotly(p, tooltip = "text")
+ggplotly(p)
 ```
 
 ### Data extraction with fortify
 
 ```r
 tiles <- fortify_marimekko(titanic, Class, Survived,
-                           weight = Freq, residuals = TRUE)
+  weight = Freq, residuals = TRUE
+)
 head(tiles)
 ```
 
@@ -160,17 +192,13 @@ head(tiles)
 
 `marimekko` extends ggplot2 through the ggproto system:
 
-- **`Statmarimekko`** computes tile rectangles (`xmin`, `xmax`, `ymin`,
-  `ymax`) from aggregated weighted counts. Column widths are proportional
-  to marginal totals; segment heights are proportional to conditional
-  totals within each column.
-- **`Geommarimekko`** inherits from `GeomRect` with sensible defaults
+- **`Statmarimekko`** parses the formula, recursively partitions the
+  unit square, and returns tile rectangles (`xmin`, `xmax`, `ymin`,
+  `ymax`) with computed variables (`.resid`, `.proportion`, `.marginal`).
+- Tiles are rendered via **`GeomRect`** with sensible defaults
   (white borders, slight transparency).
 - **`scale_x_marimekko()`** reads tile midpoints stored by the stat to
   place category labels on the x-axis.
-
-The `x` aesthetic is internally remapped to `x_var` so ggplot2 treats
-the axis as continuous (avoiding discrete/continuous scale conflicts).
 
 ## Why not ggmosaic?
 
@@ -178,12 +206,12 @@ the axis as continuous (avoiding discrete/continuous scale conflicts).
 [ggmosaic](https://github.com/haleyjeppson/ggmosaic):
 
 - **No internal ggplot2 API usage** -- won't break on ggplot2 updates
-- **Standard `aes()` mappings** -- no confusing `product()` wrapper
+- **Formula-based API** -- `~ a | b | c` encodes both variables and directions
 - **Works without `library()`** -- `marimekko::geom_marimekko()` just works
 - **No tidyr dependency** -- no deprecation warnings
 - **Respects factor levels** -- user-set `levels()` are honored
-- **In-aes expressions** -- `fill = factor(cyl)` works as expected
-- **Plotly compatible** -- built-in tooltip support via `.tooltip`
+- **In-formula expressions** -- `~ factor(cyl) | cut(mpg, breaks = 3)` works
+- **Plotly compatible** -- `ggplotly()` works out of the box
 - **Independent x/y gaps** -- different spacing for columns vs segments
 
 ## Dependencies

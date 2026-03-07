@@ -1,6 +1,6 @@
 #' Compute marimekko tile rectangles as a data frame
 #'
-#' @include mekko-package.R
+#' @include marimekko-package.R
 #'
 #' `fortify_marimekko()` returns the computed tile positions without
 #' plotting. Useful for custom downstream analysis or manual layer

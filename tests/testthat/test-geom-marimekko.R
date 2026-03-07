@@ -251,6 +251,30 @@ describe("geom_marimekko", {
         "formula.*required"
       )
     })
+
+    it("errors if formula is not a formula object", {
+      expect_error(
+        ggplot(titanic_df) +
+          geom_marimekko(aes(weight = Freq), formula = "~ Class | Survived"),
+        "must be a formula"
+      )
+    })
+
+    it("errors if formula is two-sided", {
+      expect_error(
+        ggplot(titanic_df) +
+          geom_marimekko(aes(weight = Freq), formula = Class ~ Survived),
+        "one-sided"
+      )
+    })
+
+    it("errors if formula has no variables", {
+      expect_error(
+        ggplot(titanic_df) +
+          geom_marimekko(aes(weight = Freq), formula = ~1),
+        "at least one variable"
+      )
+    })
   })
 
   describe("computed variables", {
@@ -870,5 +894,38 @@ describe("visual regression", {
         geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
         scale_x_marimekko(show_percentages = TRUE)
     })
+  })
+})
+
+describe("zero-weight edge cases", {
+  it("returns empty plot when all weights are zero", {
+    df <- data.frame(
+      x = factor(c("A", "B")),
+      fill = factor(c("Y", "N")),
+      weight = c(0, 0)
+    )
+    d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight))
+    expect_true(is.null(d) || nrow(d) == 0)
+  })
+})
+
+describe("scale fallbacks when env is empty", {
+  it("scale_x_marimekko returns waiver when labels env is NULL", {
+    .marimekko_env$labels <- NULL
+    s <- scale_x_marimekko()
+    # breaks and labels functions should return waiver() when env is NULL
+    breaks_result <- s$breaks(c(0, 1))
+    labels_result <- s$labels(0.5)
+    expect_true(inherits(breaks_result, "waiver"))
+    expect_true(inherits(labels_result, "waiver"))
+  })
+
+  it("scale_y_marimekko returns waiver when y_labels env is NULL", {
+    .marimekko_env$y_labels <- NULL
+    s <- scale_y_marimekko()
+    breaks_result <- s$breaks(c(0, 1))
+    labels_result <- s$labels(0.5)
+    expect_true(inherits(breaks_result, "waiver"))
+    expect_true(inherits(labels_result, "waiver"))
   })
 })

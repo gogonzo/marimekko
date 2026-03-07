@@ -1,6 +1,6 @@
 #' Y-axis scale for marimekko plots
 #'
-#' @include mekko-package.R
+#' @include marimekko-package.R
 #'
 #' Replaces the default continuous y scale with one that shows
 #' fill category labels at segment midpoints.
@@ -23,7 +23,7 @@
 #'
 #' @export
 scale_y_marimekko <- function(...) {
-  breaks_fn <- function(limits) {
+  .breaks_fn <- function(limits) {
     info <- .marimekko_env$y_labels
     if (is.null(info)) {
       return(waiver())
@@ -31,7 +31,7 @@ scale_y_marimekko <- function(...) {
     info$y_mid
   }
 
-  labels_fn <- function(breaks) {
+  .labels_fn <- function(breaks) {
     info <- .marimekko_env$y_labels
     if (is.null(info)) {
       return(waiver())
@@ -40,8 +40,8 @@ scale_y_marimekko <- function(...) {
   }
 
   scale_y_continuous(
-    breaks = breaks_fn,
-    labels = labels_fn,
+    breaks = .breaks_fn,
+    labels = .labels_fn,
     expand = expansion(mult = 0.01),
     ...
   )

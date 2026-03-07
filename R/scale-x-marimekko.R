@@ -1,6 +1,6 @@
 #' X-axis scale for marimekko plots
 #'
-#' @include mekko-package.R
+#' @include marimekko-package.R
 #'
 #' Replaces the default continuous x scale with one that shows
 #' category labels at column midpoints. Optionally displays
@@ -25,7 +25,7 @@
 #'
 #' @export
 scale_x_marimekko <- function(show_percentages = FALSE, ...) {
-  breaks_fn <- function(limits) {
+  .breaks_fn <- function(limits) {
     info <- .marimekko_env$labels
     if (is.null(info)) {
       return(waiver())
@@ -33,7 +33,7 @@ scale_x_marimekko <- function(show_percentages = FALSE, ...) {
     info$x_mid
   }
 
-  labels_fn <- function(breaks) {
+  .labels_fn <- function(breaks) {
     info <- .marimekko_env$labels
     if (is.null(info)) {
       return(waiver())
@@ -46,8 +46,8 @@ scale_x_marimekko <- function(show_percentages = FALSE, ...) {
   }
 
   scale_x_continuous(
-    breaks = breaks_fn,
-    labels = labels_fn,
+    breaks = .breaks_fn,
+    labels = .labels_fn,
     expand = expansion(mult = 0.01),
     ...
   )

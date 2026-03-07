@@ -42,7 +42,6 @@ reference:
       - geom_marimekko_text
       - geom_marimekko_label
       - geom_marimekko_jitter
-      - geom_marimekko_multi
 
   - title: "Scales"
     desc: >
@@ -63,14 +62,6 @@ reference:
     contents:
       - fortify_marimekko
       - theme_marimekko
-
-  - title: "ggproto objects"
-    desc: >
-      Underlying ggproto classes for advanced customization.
-    contents:
-      - Statmarimekko
-      - StatmarimekkoJitter
-      - StatmarimekkoMulti
 
 articles:
   - title: "Tutorials"

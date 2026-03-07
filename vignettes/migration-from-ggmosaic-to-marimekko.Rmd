@@ -72,7 +72,7 @@ ggplot(data = titanic) +
 # marimekko — one variable
 ggplot(titanic) +
   geom_marimekko(aes(fill = Class, weight = Freq),
-    formula = ~ Class
+    formula = ~Class
   ) +
   scale_x_marimekko() +
   theme_marimekko() +

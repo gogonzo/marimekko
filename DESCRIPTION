@@ -27,7 +27,7 @@ Suggests:
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 Collate:
-    'mekko-package.R'
+    'marimekko-package.R'
     'annotate-chisq.R'
     'fortify-marimekko.R'
     'stat-marimekko.R'

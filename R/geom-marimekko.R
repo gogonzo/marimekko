@@ -1,6 +1,6 @@
 #' Generalized mosaic plot with formula-based variable nesting
 #'
-#' @include mekko-package.R
+#' @include marimekko-package.R
 #'
 #' `geom_marimekko()` creates mosaic plots with arbitrary nesting
 #' depth. A one-sided formula controls both the **order** in which
@@ -168,8 +168,8 @@ geom_marimekko <- function(mapping = NULL, data = NULL,
   }
 
   # Parse formula into variable groups and assign directions
-  formula_groups <- parse_mosaic_formula(formula)
-  variable_specs <- assign_mosaic_directions(formula_groups)
+  formula_groups <- .parse_mosaic_formula(formula)
+  variable_specs <- .assign_mosaic_directions(formula_groups)
   variable_names <- vapply(variable_specs, function(spec) spec$var, character(1))
   variable_directions <- vapply(variable_specs, function(spec) spec$dir, character(1))
   variable_exprs <- lapply(variable_specs, function(spec) spec$expr)
@@ -216,36 +216,45 @@ geom_marimekko <- function(mapping = NULL, data = NULL,
 # --- Formula parsing ---
 
 # Walks the | tree to find groups, then extracts + variables within groups
-parse_mosaic_formula <- function(formula) {
-  if (length(formula) < 2) {
-    stop("Formula must have a right-hand side. Example: ~ a | b | c")
+.parse_mosaic_formula <- function(formula) {
+  if (!inherits(formula, "formula")) {
+    stop("`formula` must be a formula. Example: ~ Class | Survived")
+  }
+  if (length(formula) == 3L) {
+    stop(
+      "Formula must be one-sided (right-hand side only). ",
+      "Use `~ a | b`, not `a ~ b`."
+    )
+  }
+  if (length(formula) < 2L || length(all.vars(formula)) == 0L) {
+    stop("Formula must contain at least one variable. Example: ~ Class | Survived")
   }
   right_hand_side <- formula[[2]]
   groups <- list()
 
-  walk_pipe_operator <- function(expression) {
+  .walk_pipe_operator <- function(expression) {
     if (is.call(expression) && identical(expression[[1]], as.symbol("|"))) {
-      walk_pipe_operator(expression[[2]])
-      walk_pipe_operator(expression[[3]])
+      .walk_pipe_operator(expression[[2]])
+      .walk_pipe_operator(expression[[3]])
     } else {
-      groups[[length(groups) + 1]] <<- extract_plus_variables(expression)
+      groups[[length(groups) + 1]] <<- .extract_plus_variables(expression)
     }
   }
 
-  extract_plus_variables <- function(expression) {
+  .extract_plus_variables <- function(expression) {
     if (is.call(expression) && identical(expression[[1]], as.symbol("+"))) {
-      c(extract_plus_variables(expression[[2]]), extract_plus_variables(expression[[3]]))
+      c(.extract_plus_variables(expression[[2]]), .extract_plus_variables(expression[[3]]))
     } else {
       list(expression)
     }
   }
 
-  walk_pipe_operator(right_hand_side)
+  .walk_pipe_operator(right_hand_side)
   groups
 }
 
 # Assign h/v directions: groups alternate, variables within a group share direction
-assign_mosaic_directions <- function(groups) {
+.assign_mosaic_directions <- function(groups) {
   direction_cycle <- c("h", "v")
   result <- list()
   for (group_index in seq_along(groups)) {
@@ -263,11 +272,11 @@ assign_mosaic_directions <- function(groups) {
 
 # --- Recursive partitioning ---
 
-recursive_mosaic <- function(data, variable_specs, variable_names,
-                             xmin, xmax, ymin, ymax,
-                             gap_x, gap_y, level = 1L,
-                             parent_weight = NA_real_,
-                             root_weight = NA_real_) {
+.recursive_mosaic <- function(data, variable_specs, variable_names,
+                              xmin, xmax, ymin, ymax,
+                              gap_x, gap_y, level = 1L,
+                              parent_weight = NA_real_,
+                              root_weight = NA_real_) {
   if (level > length(variable_specs)) {
     # Leaf tile — no more variables to partition by
     total_weight <- sum(data$weight)
@@ -275,10 +284,16 @@ recursive_mosaic <- function(data, variable_specs, variable_names,
       xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax,
       weight = total_weight,
       fill = data$fill[1],
-      .proportion = if (is.na(parent_weight) || parent_weight == 0) NA_real_
-                    else total_weight / parent_weight,
-      .marginal = if (is.na(root_weight) || root_weight == 0) NA_real_
-                  else total_weight / root_weight,
+      .proportion = if (is.na(parent_weight) || parent_weight == 0) {
+        NA_real_
+      } else {
+        total_weight / parent_weight
+      },
+      .marginal = if (is.na(root_weight) || root_weight == 0) {
+        NA_real_
+      } else {
+        total_weight / root_weight
+      },
       stringsAsFactors = FALSE
     )
     # Store each variable's value at this leaf
@@ -303,9 +318,6 @@ recursive_mosaic <- function(data, variable_specs, variable_names,
 
   non_empty_levels <- factor_levels[weight_per_level > 0]
   num_non_empty <- length(non_empty_levels)
-  if (num_non_empty == 0) {
-    return(NULL)
-  }
 
   current_gap <- if (current_direction == "h") gap_x else gap_y
   total_gap_space <- current_gap * max(num_non_empty - 1, 0)
@@ -325,7 +337,7 @@ recursive_mosaic <- function(data, variable_specs, variable_names,
     } else {
       tile_bounds <- list(xmin, xmax, start, start + span)
     }
-    recursive_mosaic(
+    .recursive_mosaic(
       subset_data, variable_specs, variable_names,
       tile_bounds[[1]], tile_bounds[[2]], tile_bounds[[3]], tile_bounds[[4]],
       gap_x, gap_y, level + 1L,
@@ -379,7 +391,7 @@ Statmarimekko <- ggproto("Statmarimekko", Stat,
 
     # Recursive partition
     total_weight <- sum(data$weight)
-    tiles <- recursive_mosaic(
+    tiles <- .recursive_mosaic(
       data, variable_specs, variable_names,
       xmin = 0, xmax = 1, ymin = 0, ymax = 1,
       gap_x = gap_x, gap_y = gap_y,
@@ -404,8 +416,10 @@ Statmarimekko <- ggproto("Statmarimekko", Stat,
       v_key <- do.call(paste, c(lapply(v_vars, function(v) tiles[[v]]), list(sep = ":")))
       h_levels <- unique(h_key)
       v_levels <- unique(v_key)
-      ct <- matrix(0, nrow = length(h_levels), ncol = length(v_levels),
-                   dimnames = list(h_levels, v_levels))
+      ct <- matrix(0,
+        nrow = length(h_levels), ncol = length(v_levels),
+        dimnames = list(h_levels, v_levels)
+      )
       for (k in seq_len(nrow(tiles))) {
         ct[h_key[k], v_key[k]] <- ct[h_key[k], v_key[k]] + tiles$weight[k]
       }
