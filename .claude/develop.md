@@ -11,11 +11,13 @@ Act as a developer working on the runner R package. Follow these guidelines:
 - Run `R CMD check .` and resolve any WARNINGs or ERRORs (NOTEs are acceptable)
 
 ## Tests
-- Add tinytest tests in `inst/tinytest/` for any new or changed behavior
+- Add `testthat` tests in `tests/testthat/` for any new or changed behavior
+- Use `describe()`, `it()` instead of `testthat()`
 - Never change tests which relate to the unchanged functionality
 - Cover: typical usage, edge cases (NA, empty, single element), error conditions
-- Use `tinytest::expect_equal()`, `expect_true()`, `expect_error()` etc.
+- Use `testthat::expect_equal()`, `expect_true()`, `expect_error()` etc.
 - Never test private functions directly but cover them via public ones
+- Please write precise test descriptions. Avoid "function works if argument is specified correctly", but rather write "Function returns abc if argument is specified as xyz".
 
 ## Documentation
 - Add roxygen2 docs for new exported functions with `@param`, `@return`, `@export`, `@examples`

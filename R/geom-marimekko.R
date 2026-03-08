@@ -80,15 +80,19 @@
 #'   `gap`).
 #' @param gap_y Numeric. Vertical gap override. Default `NULL` (uses
 #'   `gap`).
-#' @param colour Tile border colour. Default `"white"`.
+#' @param colour Tile border colour. Default `NULL`, which matches
+#'   the `fill` colour so borders blend in. Set to `"white"` or
+#'   another colour to override.
 #' @param alpha Tile transparency. Default `0.9`.
+#' @param show_percentages Logical. If `TRUE`, appends marginal
+#'   percentage to each x-axis label. Default `FALSE`.
 #' @param na.rm Logical. Remove missing values. Default `FALSE`.
 #' @param show.legend Logical. Show legend. Default `NA`.
 #' @param inherit.aes Logical. Inherit aesthetics from `ggplot()`.
 #'   Default `TRUE`.
 #' @param ... Additional arguments passed to the layer.
 #'
-#' @return A ggplot2 layer.
+#' @return A list of ggplot2 layers (geom + axis scales).
 #'
 #' @examples
 #' library(ggplot2)
@@ -100,27 +104,21 @@
 #'   geom_marimekko(
 #'     aes(fill = Survived, weight = Freq),
 #'     formula = ~ Class | Survived
-#'   ) +
-#'   scale_x_marimekko() +
-#'   scale_y_marimekko()
+#'   )
 #'
 #' # 3-variable mosaic (h -> v -> h)
 #' ggplot(titanic) +
 #'   geom_marimekko(
 #'     aes(fill = Survived, weight = Freq),
 #'     formula = ~ Class | Survived | Sex
-#'   ) +
-#'   scale_x_marimekko() +
-#'   scale_y_marimekko()
+#'   )
 #'
 #' # Multi-variable fill with interaction()
 #' ggplot(titanic) +
 #'   geom_marimekko(
 #'     aes(fill = interaction(Sex, Survived), weight = Freq),
 #'     formula = ~ Class | Sex + Survived
-#'   ) +
-#'   scale_x_marimekko() +
-#'   scale_y_marimekko()
+#'   )
 #'
 #' # Fade tiles by conditional proportion
 #' ggplot(titanic) +
@@ -128,8 +126,6 @@
 #'     aes(fill = Survived, alpha = after_stat(.proportion), weight = Freq),
 #'     formula = ~ Class | Survived
 #'   ) +
-#'   scale_x_marimekko() +
-#'   scale_y_marimekko() +
 #'   guides(alpha = "none")
 #'
 #' # Highlight cells that deviate from independence
@@ -138,8 +134,6 @@
 #'     aes(fill = Survived, alpha = after_stat(abs(.resid)), weight = Freq),
 #'     formula = ~ Class | Survived
 #'   ) +
-#'   scale_x_marimekko() +
-#'   scale_y_marimekko() +
 #'   guides(alpha = "none")
 #'
 #' @export
@@ -148,8 +142,9 @@ geom_marimekko <- function(mapping = NULL, data = NULL,
                            gap = 0.01,
                            gap_x = NULL,
                            gap_y = NULL,
-                           colour = "white",
+                           colour = NULL,
                            alpha = 0.9,
+                           show_percentages = FALSE,
                            na.rm = FALSE,
                            show.legend = NA,
                            inherit.aes = TRUE,
@@ -157,9 +152,9 @@ geom_marimekko <- function(mapping = NULL, data = NULL,
   # Backward-compatible: auto-construct formula from x and fill aesthetics
 
   if (is.null(formula)) {
-    if (!is.null(mapping) && "x" %in% names(mapping) && "fill" %in% names(mapping)) {
-      x_expr <- deparse(rlang::quo_get_expr(mapping[["x"]]))
-      fill_expr <- deparse(rlang::quo_get_expr(mapping[["fill"]]))
+    if ("x" %in% names(mapping) && "fill" %in% names(mapping)) {
+      x_expr <- all.vars(mapping[["x"]])
+      fill_expr <- all.vars(mapping[["fill"]])
       formula <- stats::as.formula(paste("~", x_expr, "|", fill_expr))
       mapping[["x"]] <- NULL
     } else {
@@ -192,24 +187,75 @@ geom_marimekko <- function(mapping = NULL, data = NULL,
     gap = gap,
     gap_x = gap_x,
     gap_y = gap_y,
-    colour = colour,
     na.rm = na.rm,
     ...
   )
+  # Only set colour as a fixed param when explicitly provided
+  if (!is.null(colour)) {
+    params$colour <- colour
+  }
   # Only set alpha as a fixed param when not mapped as an aesthetic
   if (!"alpha" %in% names(mapping)) {
     params$alpha <- alpha
   }
 
-  layer(
-    data = data,
-    mapping = mapping,
-    stat = Statmarimekko,
-    geom = GeomRect,
-    position = "identity",
-    show.legend = show.legend,
-    inherit.aes = inherit.aes,
-    params = params
+  .x_breaks_fn <- function(limits) {
+    info <- .marimekko_env$labels
+    if (is.null(info)) {
+      return(waiver())
+    }
+    info$x_mid
+  }
+
+  .x_labels_fn <- function(breaks) {
+    info <- .marimekko_env$labels
+    if (is.null(info)) {
+      return(waiver())
+    }
+    if (show_percentages) {
+      paste0(info$label, "\n(", round(info$pct * 100, 1), "%)")
+    } else {
+      info$label
+    }
+  }
+
+  .y_breaks_fn <- function(limits) {
+    info <- .marimekko_env$y_labels
+    if (is.null(info)) {
+      return(waiver())
+    }
+    info$y_mid
+  }
+
+  .y_labels_fn <- function(breaks) {
+    info <- .marimekko_env$y_labels
+    if (is.null(info)) {
+      return(waiver())
+    }
+    info$label
+  }
+
+  list(
+    layer(
+      data = data,
+      mapping = mapping,
+      stat = Statmarimekko,
+      geom = GeomRect,
+      position = "identity",
+      show.legend = show.legend,
+      inherit.aes = inherit.aes,
+      params = params
+    ),
+    scale_x_continuous(
+      breaks = .x_breaks_fn,
+      labels = .x_labels_fn,
+      expand = expansion(mult = 0.01)
+    ),
+    scale_y_continuous(
+      breaks = .y_breaks_fn,
+      labels = .y_labels_fn,
+      expand = expansion(mult = 0.01)
+    )
   )
 }
 
@@ -284,6 +330,7 @@ geom_marimekko <- function(mapping = NULL, data = NULL,
       xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax,
       weight = total_weight,
       fill = data$fill[1],
+      colour = if ("colour" %in% names(data)) data$colour[1] else NA,
       .proportion = if (is.na(parent_weight) || parent_weight == 0) {
         NA_real_
       } else {
@@ -362,6 +409,7 @@ Statmarimekko <- ggproto("Statmarimekko", Stat,
     params$gap_y <- params$gap_y %||% params$gap
     .marimekko_env$labels <- NULL
     .marimekko_env$y_labels <- NULL
+    .marimekko_env$tiles <- NULL
     params
   },
   compute_panel = function(data, scales,
@@ -384,6 +432,9 @@ Statmarimekko <- ggproto("Statmarimekko", Stat,
       data[[variable_names[i]]] <- as.factor(data[[paste0("mvar_", i)]])
     }
     data$fill <- as.factor(data$fill)
+    if ("colour" %in% names(data)) {
+      data$colour <- as.factor(data$colour)
+    }
 
     if (is.null(data$weight) || all(is.na(data$weight))) {
       data$weight <- 1
@@ -477,6 +528,13 @@ Statmarimekko <- ggproto("Statmarimekko", Stat,
     for (i in seq_len(num_variables)) {
       tiles[[paste0("mvar_", i)]] <- NULL
     }
+
+    # Cache tiles for companion layers (text, label, jitter)
+    panel_id <- if ("PANEL" %in% names(tiles)) as.character(tiles$PANEL[1]) else "1"
+    if (is.null(.marimekko_env$tiles)) {
+      .marimekko_env$tiles <- list()
+    }
+    .marimekko_env$tiles[[panel_id]] <- tiles
 
     tiles
   }

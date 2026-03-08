@@ -15,8 +15,7 @@ RoxygenNote: 7.3.3
 Depends:
     R (>= 4.1.0)
 Imports:
-    ggplot2 (>= 3.5.0),
-    rlang
+    ggplot2 (>= 3.5.0)
 Suggests:
     knitr,
     pkgdown,
@@ -28,11 +27,8 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Collate:
     'marimekko-package.R'
-    'fortify-marimekko.R'
-    'stat-marimekko.R'
-    'geom-marimekko-jitter.R'
-    'geom-marimekko-text.R'
     'geom-marimekko.R'
-    'scale-x-marimekko.R'
-    'scale-y-marimekko.R'
+    'fortify-marimekko.R'
+    'geom-marimekko-text.R'
+    'geom-marimekko-jitter.R'
     'theme-marimekko.R'

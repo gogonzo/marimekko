@@ -43,8 +43,8 @@ showing each ggmosaic pattern and its marimekko equivalent.
 | `geom_mosaic_text()` | `geom_marimekko_text()` | |
 | `geom_mosaic_jitter()` | `geom_marimekko_jitter()` | Adds `seed` parameter |
 | `theme_mosaic()` | `theme_marimekko()` | |
-| `scale_x_productlist()` | `scale_x_marimekko()` | Adds `show_percentages` |
-| `scale_y_productlist()` | `scale_y_marimekko()` | |
+| `scale_x_productlist()` | *not needed* | Axis labels are automatic; use `show_percentages = TRUE` in `geom_marimekko()` |
+| `scale_y_productlist()` | *not needed* | Axis labels are automatic |
 | `product()` | *not needed* | Use `formula = ~ a \| b` or `aes(x = ..., fill = ...)` |
 | — | `geom_marimekko_label()` | New: text with background box |
 | — | `fortify_marimekko()` | New: extract tile data as data frame |
@@ -73,7 +73,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Class, weight = Freq),
     formula = ~Class
   ) +
-  scale_x_marimekko() +
   theme_marimekko() +
   labs(title = "One variable: f(Class)")
 ```
@@ -123,7 +122,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
   theme_marimekko() +
   labs(
     title = "Two variables: f(Survived | Class) f(Class)",
@@ -166,7 +164,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Sex | Class | Survived
   ) +
-  scale_x_marimekko() +
   theme_marimekko() +
   labs(
     title = "Three variables: f(Survived | Class, Sex)",
@@ -197,7 +194,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Sex | Survived
   ) +
-  scale_x_marimekko() +
   labs(title = "Three variables: Class / Sex / Survived")
 ```
 
@@ -223,7 +219,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
   facet_wrap(~Sex) +
   labs(title = "f(Survived | Class) conditioned on Sex")
 ```
@@ -234,8 +229,7 @@ Or use a three-variable formula to keep everything in one panel:
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Sex | Survived
-  ) +
-  scale_x_marimekko()
+  )
 ```
 
 ### Faceting
@@ -258,7 +252,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
   facet_wrap(~Sex) +
   labs(title = "Mosaic faceted by Sex")
 ```
@@ -291,7 +284,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
   labs(title = "Mosaic plot (proportional-width columns)")
 ```
 
@@ -315,7 +307,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived, gap_x = 0, gap_y = 0
   ) +
-  scale_x_marimekko() +
   labs(title = "No gaps")
 ```
 
@@ -325,7 +316,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived, gap_x = 0.04, gap_y = 0.02
   ) +
-  scale_x_marimekko() +
   labs(title = "Wider gaps (gap_x = 0.04, gap_y = 0.02)")
 ```
 
@@ -341,21 +331,20 @@ ggplot(titanic) +
 ```
 
 ```{r text}
-# marimekko — explicit label aesthetic
+# marimekko — automatic tile positions, only label needed
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
   geom_marimekko_text(aes(
-    x = Class, fill = Survived, weight = Freq,
-    label = after_stat(paste(x_label, fill_label, sep = "\n"))
-  )) +
-  scale_x_marimekko()
+    label = after_stat(paste(Class, Survived, sep = "\n"))
+  ))
 ```
 
-marimekko requires an explicit `label` aesthetic — you choose what to display
-(`x_label` and `fill_label` for category names, `weight` for counts,
-`cond_prop` for proportions, or any custom label).
+`geom_marimekko_text()` reads tile positions from the preceding
+`geom_marimekko()` layer — only the `label` aesthetic is needed.
+Use `after_stat()` for computed variables like `weight` (count),
+`.proportion`, or the original variable columns.
 
 ### Axis labels and percentages
 
@@ -372,9 +361,9 @@ ggplot(titanic) +
 # marimekko — with optional marginal percentages
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
-    formula = ~ Class | Survived
+    formula = ~ Class | Survived,
+    show_percentages = TRUE
   ) +
-  scale_x_marimekko(show_percentages = TRUE) +
   theme_marimekko()
 ```
 
@@ -396,10 +385,7 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived, alpha = 0.3
   ) +
-  geom_marimekko_jitter(aes(x = Class, fill = Survived, weight = Freq),
-    seed = 42, size = 0.5
-  ) +
-  scale_x_marimekko() +
+  geom_marimekko_jitter(seed = 42, size = 0.5) +
   labs(title = "Jittered points reveal underlying density")
 ```
 
@@ -419,8 +405,8 @@ hair <- as.data.frame(HairEyeColor)
 ggplot(hair) +
   geom_marimekko(aes(fill = Eye, weight = Freq),
     formula = ~ Hair | Eye
+    show_percentages = TRUE
   ) +
-  scale_x_marimekko(show_percentages = TRUE) +
   scale_fill_manual(values = c(
     Brown = "#8B4513", Blue = "#4682B4",
     Hazel = "#C4A265", Green = "#228B22"
@@ -436,7 +422,6 @@ ggplot(hair) +
   geom_marimekko(aes(fill = Eye, weight = Freq),
     formula = ~ Hair | Sex | Eye
   ) +
-  scale_x_marimekko() +
   scale_fill_manual(values = c(
     Brown = "#8B4513", Blue = "#4682B4",
     Hazel = "#C4A265", Green = "#228B22"
@@ -451,7 +436,6 @@ ggplot(hair) +
   geom_marimekko(aes(fill = Eye, weight = Freq),
     formula = ~ Hair | Eye
   ) +
-  scale_x_marimekko() +
   scale_fill_manual(values = c(
     Brown = "#8B4513", Blue = "#4682B4",
     Hazel = "#C4A265", Green = "#228B22"
@@ -470,11 +454,11 @@ formula-based API:
 - `fill` — tile colour (defaults to last formula variable)
 - `weight` — observation weights / counts
 
-### 2. Explicit `scale_x_marimekko()` required
+### 2. Automatic axis labels
 
-ggmosaic handled axis labels internally. marimekko requires you to add
-`scale_x_marimekko()` to get category labels on the x-axis. Without it, the
-x-axis shows raw continuous positions.
+ggmosaic handled axis labels internally. marimekko also adds axis labels
+automatically via `geom_marimekko()`. Use `show_percentages = TRUE` in
+`geom_marimekko()` to append marginal percentages to the x-axis labels.
 
 ### 3. No `divider` argument
 
@@ -510,8 +494,7 @@ library(plotly)
 p <- ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
-  ) +
-  scale_x_marimekko()
+  )
 
 ggplotly(p)
 ```
@@ -528,20 +511,19 @@ geom_mosaic(          →  geom_marimekko(
 geom_mosaic_text(     →  geom_marimekko_text(
 geom_mosaic_jitter(   →  geom_marimekko_jitter(
 theme_mosaic(         →  theme_marimekko(
-scale_x_productlist(  →  scale_x_marimekko(
-scale_y_productlist(  →  scale_y_marimekko(
 library(ggmosaic)     →  library(marimekko)
 ```
 
 Then manually:
 
-1. Remove all `product()` wrappers — add `formula = ~ Var1 | Var2` instead
-2. Remove `conds` aesthetic — use `facet_wrap()` or a multi-variable formula
-3. Add `scale_x_marimekko()` if missing
-4. Remove `divider = ...` — direction is encoded in the formula
+1. Remove all `product()` wrappers -- add `formula = ~ Var1 | Var2` instead
+2. Remove `conds` aesthetic -- use `facet_wrap()` or a multi-variable formula
+3. Remove `scale_x_productlist()` / `scale_y_productlist()` -- axis labels are now automatic
+4. Remove `divider = ...` -- direction is encoded in the formula
 5. Replace `offset = ...` with `gap` / `gap_x` / `gap_y`
 6. Add explicit `label = after_stat(weight)` to text layers
 7. Set `inherit.aes = FALSE` only where deliberately needed
+8. Move `show_percentages = TRUE` from scale to `geom_marimekko(..., show_percentages = TRUE)`
 
 ## References
 

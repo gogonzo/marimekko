@@ -43,13 +43,6 @@ reference:
       - geom_marimekko_label
       - geom_marimekko_jitter
 
-  - title: "Scales"
-    desc: >
-      Custom scales that label axes with category names.
-    contents:
-      - scale_x_marimekko
-      - scale_y_marimekko
-
   - title: "Utilities"
     desc: >
       Helper functions for data extraction and theming.

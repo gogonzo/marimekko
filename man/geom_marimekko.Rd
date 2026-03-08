@@ -11,8 +11,9 @@ geom_marimekko(
   gap = 0.01,
   gap_x = NULL,
   gap_y = NULL,
-  colour = "white",
+  colour = NULL,
   alpha = 0.9,
+  show_percentages = FALSE,
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE,
@@ -48,9 +49,14 @@ Default \code{0.01}.}
 \item{gap_y}{Numeric. Vertical gap override. Default \code{NULL} (uses
 \code{gap}).}
 
-\item{colour}{Tile border colour. Default \code{"white"}.}
+\item{colour}{Tile border colour. Default \code{NULL}, which matches
+the \code{fill} colour so borders blend in. Set to \code{"white"} or
+another colour to override.}
 
 \item{alpha}{Tile transparency. Default \code{0.9}.}
+
+\item{show_percentages}{Logical. If \code{TRUE}, appends marginal
+percentage to each x-axis label. Default \code{FALSE}.}
 
 \item{na.rm}{Logical. Remove missing values. Default \code{FALSE}.}
 
@@ -62,7 +68,7 @@ Default \code{TRUE}.}
 \item{...}{Additional arguments passed to the layer.}
 }
 \value{
-A ggplot2 layer.
+A list of ggplot2 layers (geom + axis scales).
 }
 \description{
 Generalized mosaic plot with formula-based variable nesting
@@ -135,27 +141,21 @@ ggplot(titanic) +
   geom_marimekko(
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
-  ) +
-  scale_x_marimekko() +
-  scale_y_marimekko()
+  )
 
 # 3-variable mosaic (h -> v -> h)
 ggplot(titanic) +
   geom_marimekko(
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived | Sex
-  ) +
-  scale_x_marimekko() +
-  scale_y_marimekko()
+  )
 
 # Multi-variable fill with interaction()
 ggplot(titanic) +
   geom_marimekko(
     aes(fill = interaction(Sex, Survived), weight = Freq),
     formula = ~ Class | Sex + Survived
-  ) +
-  scale_x_marimekko() +
-  scale_y_marimekko()
+  )
 
 # Fade tiles by conditional proportion
 ggplot(titanic) +
@@ -163,8 +163,6 @@ ggplot(titanic) +
     aes(fill = Survived, alpha = after_stat(.proportion), weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
   guides(alpha = "none")
 
 # Highlight cells that deviate from independence
@@ -173,8 +171,6 @@ ggplot(titanic) +
     aes(fill = Survived, alpha = after_stat(abs(.resid)), weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
   guides(alpha = "none")
 
 }

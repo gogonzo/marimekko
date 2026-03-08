@@ -31,7 +31,6 @@ ggplot(flights) +
     aes(fill = do_you_recline),
     formula = ~do_you_recline
   ) +
-  scale_x_marimekko() +
   theme_marimekko() +
   coord_flip() +
   labs(y = "Do you recline?", x = "", title = "Spine Plot")
@@ -50,8 +49,6 @@ ggplot(flights) +
     aes(fill = do_you_recline),
     formula = ~ rude_to_recline | do_you_recline
   ) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
   theme_marimekko() +
   labs(x = "Is it rude to recline?", y = "Do you recline?", title = "Stacked Bar Chart")
 
@@ -66,8 +63,6 @@ ggplot(flights) +
     aes(fill = do_you_recline),
     formula = ~ rude_to_recline | do_you_recline
   ) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
   theme_marimekko() +
   labs(y = "Do you recline?", x = "Is it rude to recline?", title = "Mosaic Plot (2 variables)")
 
@@ -91,8 +86,6 @@ ggplot(flights) +
     aes(fill = do_you_recline),
     formula = ~ rude_to_recline | do_you_recline | eliminate_reclining
   ) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
   theme_marimekko() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
   labs(
@@ -122,8 +115,6 @@ ggplot(flights) +
     aes(fill = do_you_recline),
     formula = ~ rude_to_recline + eliminate_reclining | do_you_recline
   ) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
   theme_marimekko() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
   labs(
@@ -138,8 +129,6 @@ ggplot(flights) +
     aes(fill = interaction(eliminate_reclining, rude_to_recline)),
     formula = ~ do_you_recline | eliminate_reclining + rude_to_recline
   ) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
   theme_marimekko() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
   labs(
@@ -162,8 +151,6 @@ ggplot(flights6) +
     aes(fill = interaction(do_you_recline, gender, window_shade)),
     formula = ~ rude_to_recline | do_you_recline | eliminate_reclining | gender | has_child_under_18 | window_shade
   ) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
   theme_marimekko() +
   theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = .5)) +
   labs(title = "Mosaic Plot (6 variables, 5 direction changes)")
@@ -174,8 +161,6 @@ ggplot(titanic) +
     aes(fill = Survived, alpha = after_stat(.proportion), weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
   guides(alpha = "none")
 
 
@@ -186,14 +171,12 @@ ggplot(titanic) +
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_fill_manual(values = c("No" = "grey80", "Yes" = "steelblue")) +
-  scale_x_marimekko() +
-  scale_y_marimekko()
+  scale_fill_manual(values = c("No" = "grey80", "Yes" = "steelblue"))
 
 # --- conditional fill based on residuals ---
 # Highlight only cells with |residual| > 2 (significant deviation)
 # Step 1: compute tiles with fortify_marimekko
-tiles <- fortify_marimekko(titanic, Class, Survived, weight = Freq, residuals = TRUE)
+tiles <- fortify_marimekko(titanic, formula = ~ Class | Survived, weight = Freq)
 tiles$significant <- ifelse(abs(tiles$.resid) > 2, "significant", "not significant")
 
 ggplot(tiles) +
@@ -204,9 +187,7 @@ ggplot(tiles) +
   scale_fill_manual(values = c(
     "significant" = "firebrick",
     "not significant" = "grey80"
-  )) +
-  scale_x_marimekko() +
-  scale_y_marimekko()
+  ))
 
 # --- fill by residual sign (positive = over-represented, negative = under-represented) ---
 tiles$direction <- ifelse(tiles$.resid > 0, "over-represented", "under-represented")
@@ -220,8 +201,6 @@ ggplot(tiles) +
     "over-represented" = "steelblue",
     "under-represented" = "firebrick"
   )) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
   guides(alpha = "none")
 
 # todo:

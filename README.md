@@ -31,7 +31,6 @@ ggplot(titanic) +
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
   labs(title = "Titanic survival by class", y = "Proportion") +
   theme_marimekko()
 ```
@@ -59,8 +58,7 @@ The formula encodes both variable order and split direction:
 | Text labels on tiles             | `geom_marimekko_text()`        |
 | Labels with background box       | `geom_marimekko_label()`       |
 | Jittered points in tiles         | `geom_marimekko_jitter()`      |
-| Category labels on x-axis        | `scale_x_marimekko()`          |
-| Fill labels on y-axis            | `scale_y_marimekko()`          |
+| Marginal percentages on x-axis   | `show_percentages = TRUE`      |
 | Compute tiles without plotting   | `fortify_marimekko()`          |
 | Minimal mosaic theme             | `theme_marimekko()`            |
 | Pearson residual shading         | `after_stat(.resid)`           |
@@ -77,8 +75,8 @@ ggplot(titanic) +
   geom_marimekko(
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
+    show_percentages = TRUE
   ) +
-  scale_x_marimekko(show_percentages = TRUE) +
   theme_marimekko()
 ```
 
@@ -93,8 +91,7 @@ ggplot(titanic) +
   geom_marimekko_text(aes(
     x = Class, fill = Survived, weight = Freq,
     label = after_stat(weight)
-  )) +
-  scale_x_marimekko()
+  ))
 ```
 
 ### Residual shading
@@ -108,7 +105,6 @@ ggplot(titanic) +
     ),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
   scale_alpha_continuous(range = c(0.3, 1), guide = "none")
 ```
 
@@ -123,10 +119,7 @@ ggplot(ucb_a) +
     aes(fill = Admit, weight = Freq),
     formula = ~ Gender | Admit, alpha = 0.3
   ) +
-  geom_marimekko_jitter(aes(x = Gender, fill = Admit, weight = Freq),
-    seed = 42
-  ) +
-  scale_x_marimekko()
+  geom_marimekko_jitter(seed = 42)
 ```
 
 ### Three-variable nested mosaic
@@ -136,8 +129,7 @@ ggplot(titanic) +
   geom_marimekko(
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Sex | Survived
-  ) +
-  scale_x_marimekko()
+  )
 ```
 
 ### Faceting
@@ -148,7 +140,6 @@ ggplot(as.data.frame(Titanic)) +
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
   facet_wrap(~Sex)
 ```
 
@@ -159,8 +150,7 @@ ggplot(titanic) +
   geom_marimekko(
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived, gap_x = 0.04, gap_y = 0
-  ) +
-  scale_x_marimekko()
+  )
 ```
 
 ### Plotly interactivity
@@ -172,16 +162,15 @@ p <- ggplot(titanic) +
   geom_marimekko(
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
-  ) +
-  scale_x_marimekko()
+  )
 ggplotly(p)
 ```
 
 ### Data extraction with fortify
 
 ```r
-tiles <- fortify_marimekko(titanic, Class, Survived,
-  weight = Freq, residuals = TRUE
+tiles <- fortify_marimekko(titanic,
+  formula = ~ Class | Survived, weight = Freq
 )
 head(tiles)
 ```
@@ -195,8 +184,7 @@ head(tiles)
   `ymax`) with computed variables (`.resid`, `.proportion`, `.marginal`).
 - Tiles are rendered via **`GeomRect`** with sensible defaults
   (white borders, slight transparency).
-- **`scale_x_marimekko()`** reads tile midpoints stored by the stat to
-  place category labels on the x-axis.
+- Axis labels are automatically placed by the geom at tile midpoints.
 
 ## Why not ggmosaic?
 

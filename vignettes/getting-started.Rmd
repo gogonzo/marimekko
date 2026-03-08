@@ -53,18 +53,16 @@ titanic <- as.data.frame(Titanic)
 
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
-  scale_x_marimekko() +
   labs(title = "Titanic survival by class", y = "Proportion")
 ```
 
-Three components are at work:
+Two components are at work:
 
 1. **`geom_marimekko()`** computes tile positions from your data. The
    `formula` defines the variables (columns and segments), `fill` defines
-   the segment colours, and `weight` provides the counts.
-2. **`scale_x_marimekko()`** labels the x-axis with category names at
-   each column's midpoint.
-3. Standard ggplot2 functions (`labs()`, `theme()`, etc.) work as usual.
+   the segment colours, and `weight` provides the counts. Axis labels
+   are automatically added.
+2. Standard ggplot2 functions (`labs()`, `theme()`, etc.) work as usual.
 
 ## Aesthetics
 
@@ -82,7 +80,6 @@ omit `weight`:
 ```{r unweighted}
 ggplot(mtcars) +
   geom_marimekko(aes(x = factor(cyl), fill = factor(gear))) +
-  scale_x_marimekko() +
   labs(x = "Cylinders", fill = "Gears")
 ```
 
@@ -96,7 +93,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived, gap = 0.03
   ) +
-  scale_x_marimekko() +
   labs(title = "Wider gaps (gap = 0.03)")
 ```
 
@@ -107,41 +103,38 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived, gap = 0
   ) +
-  scale_x_marimekko() +
   labs(title = "No gaps")
 ```
 
 ## Marginal percentages
 
-`scale_x_marimekko()` can append marginal percentages to the x-axis
-labels:
+`geom_marimekko()` can append marginal percentages to the x-axis
+labels via the `show_percentages` parameter:
 
 ```{r pct}
 ggplot(titanic) +
-  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
-  scale_x_marimekko(show_percentages = TRUE) +
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived,
+    show_percentages = TRUE) +
   labs(y = "Proportion")
 ```
 
 ## Adding text labels
 
 Use `geom_marimekko_text()` (or `geom_marimekko_label()` for a boxed
-version) to place labels at tile centers. The `label` aesthetic can
-reference computed variables via `after_stat()`:
+version) to place labels at tile centers. Tile positions are read
+automatically from the preceding `geom_marimekko()` layer — only
+the `label` aesthetic is needed. Reference computed variables via
+`after_stat()`:
 
 - `weight` -- the aggregated count for the tile
-- `cond_prop` -- the conditional proportion within the column
-- `x_label` -- the x category name
-- `fill_label` -- the fill category name
+- `cond_prop` / `.proportion` -- the conditional proportion within the parent
+- `.resid` -- Pearson residual
+- Original variable columns (e.g. `Class`, `Survived`)
 
 ```{r text-labels}
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
-  geom_marimekko_text(aes(
-    x = Class, fill = Survived, weight = Freq,
-    label = after_stat(weight)
-  ), colour = "white") +
-  scale_x_marimekko() +
+  geom_marimekko_text(aes(label = after_stat(weight)), colour = "white") +
   labs(title = "Counts inside tiles")
 ```
 
@@ -151,10 +144,8 @@ Percentage labels:
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
   geom_marimekko_text(aes(
-    x = Class, fill = Survived, weight = Freq,
     label = after_stat(paste0(round(cond_prop * 100), "%"))
-  ), colour = "white", size = 3) +
-  scale_x_marimekko()
+  ), colour = "white", size = 3)
 ```
 
 ## Theming
@@ -165,7 +156,6 @@ distracting x-axis gridlines:
 ```{r theme}
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
-  scale_x_marimekko() +
   theme_marimekko() +
   labs(title = "With theme_marimekko()")
 ```
@@ -175,7 +165,6 @@ Since it builds on `theme_minimal()`, you can override any element:
 ```{r theme-custom}
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
-  scale_x_marimekko() +
   theme_marimekko() +
   theme(legend.position = "bottom")
 ```
@@ -188,7 +177,6 @@ independently proportioned mosaic:
 ```{r facet}
 ggplot(as.data.frame(Titanic)) +
   geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
-  scale_x_marimekko() +
   facet_wrap(~Sex) +
   labs(title = "Survival by class, faceted by sex")
 ```
@@ -202,7 +190,6 @@ haireye <- as.data.frame(HairEyeColor[, , 1])
 
 ggplot(haireye) +
   geom_marimekko(aes(fill = Eye, weight = Freq), formula = ~ Hair | Eye) +
-  scale_x_marimekko() +
   scale_fill_brewer(palette = "Set2") +
   labs(title = "Hair vs Eye colour (males)")
 ```

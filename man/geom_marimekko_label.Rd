@@ -9,13 +9,9 @@ geom_marimekko_label(
   data = NULL,
   position = "identity",
   ...,
-  gap = 0.01,
-  gap_x = NULL,
-  gap_y = NULL,
-  standardize = FALSE,
-  residuals = FALSE,
   size = 3.5,
   colour = "black",
+  fill = "white",
   label.padding = unit(0.15, "lines"),
   na.rm = FALSE,
   show.legend = FALSE,
@@ -23,28 +19,21 @@ geom_marimekko_label(
 )
 }
 \arguments{
-\item{mapping}{Set of aesthetic mappings. Requires \code{x}, \code{fill}, and
-\code{label}. Use \code{\link[ggplot2:aes_eval]{ggplot2::after_stat()}} for computed variables.}
+\item{mapping}{Set of aesthetic mappings. Only \code{label} is required.
+Use \code{\link[ggplot2:aes_eval]{ggplot2::after_stat()}} for computed variables.}
 
-\item{data}{A data frame.}
+\item{data}{A data frame. Default \code{NULL} (uses plot data; tile
+positions come from \code{\link[=geom_marimekko]{geom_marimekko()}}).}
 
 \item{position}{Position adjustment. Default \code{"identity"}.}
 
 \item{...}{Additional arguments passed to the layer.}
 
-\item{gap}{Numeric. Gap between tiles. Default \code{0.01}.}
-
-\item{gap_x}{Numeric. Horizontal gap override. Default \code{NULL}.}
-
-\item{gap_y}{Numeric. Vertical gap override. Default \code{NULL}.}
-
-\item{standardize}{Logical. Equal-width columns. Default \code{FALSE}.}
-
-\item{residuals}{Logical. Compute Pearson residuals. Default \code{FALSE}.}
-
 \item{size}{Text size. Default \code{3.5}.}
 
 \item{colour}{Text colour. Default \code{"black"}.}
+
+\item{fill}{Label background colour. Default \code{"white"}.}
 
 \item{label.padding}{Amount of padding around label. Default
 \code{ggplot2::unit(0.15, "lines")}.}
@@ -70,10 +59,6 @@ ggplot(titanic) +
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
-  geom_marimekko_label(aes(
-    x = Class, fill = Survived, weight = Freq,
-    label = after_stat(weight)
-  )) +
-  scale_x_marimekko()
+  geom_marimekko_label(aes(label = after_stat(weight)))
 
 }

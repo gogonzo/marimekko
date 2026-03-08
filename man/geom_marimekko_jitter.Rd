@@ -9,10 +9,6 @@ geom_marimekko_jitter(
   data = NULL,
   position = "identity",
   ...,
-  gap = 0.01,
-  gap_x = NULL,
-  gap_y = NULL,
-  standardize = FALSE,
   size = 1,
   alpha = 0.5,
   shape = 16,
@@ -24,21 +20,15 @@ geom_marimekko_jitter(
 )
 }
 \arguments{
-\item{mapping}{Set of aesthetic mappings. Requires \code{x} and \code{fill}.}
+\item{mapping}{Set of aesthetic mappings. No required aesthetics;
+tile positions come from \code{\link[=geom_marimekko]{geom_marimekko()}}.}
 
-\item{data}{A data frame.}
+\item{data}{A data frame. Default \code{NULL} (uses plot data; tile
+positions come from \code{\link[=geom_marimekko]{geom_marimekko()}}).}
 
 \item{position}{Position adjustment. Default \code{"identity"}.}
 
 \item{...}{Additional arguments passed to the layer.}
-
-\item{gap}{Numeric. Gap between tiles. Default \code{0.01}.}
-
-\item{gap_x}{Numeric. Horizontal gap override. Default \code{NULL}.}
-
-\item{gap_y}{Numeric. Vertical gap override. Default \code{NULL}.}
-
-\item{standardize}{Logical. Equal-width columns. Default \code{FALSE}.}
 
 \item{size}{Point size. Default \code{1}.}
 
@@ -74,7 +64,6 @@ ggplot(ucb_a) +
     aes(fill = Admit, weight = Freq),
     formula = ~ Gender | Admit
   ) +
-  geom_marimekko_jitter(aes(x = Gender, fill = Admit, weight = Freq)) +
-  scale_x_marimekko()
+  geom_marimekko_jitter(seed = 42)
 
 }
