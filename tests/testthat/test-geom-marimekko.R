@@ -728,49 +728,6 @@ describe("fortify_marimekko", {
   })
 })
 
-describe("annotate_chisq", {
-  it("returns a LayerInstance and renders as a text annotation", {
-    layer <- annotate_chisq(titanic_df, Class, Survived, weight = Freq)
-    expect_s3_class(layer, "LayerInstance")
-
-    p <- ggplot(titanic_df) +
-      geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-      annotate_chisq(titanic_df, Class, Survived, weight = Freq)
-    expect_no_error(print(p))
-  })
-
-  it("computes correct chi-squared statistic matching stats::chisq.test", {
-    # Build the same contingency table the function uses internally
-    ct <- xtabs(Freq ~ Class + Survived, data = titanic_df)
-    expected_test <- chisq.test(ct)
-
-    # The annotation text should contain the rounded statistic
-    layer <- annotate_chisq(titanic_df, Class, Survived, weight = Freq)
-    # Extract label from the annotation layer params
-    label_text <- layer$aes_params$label
-    expect_true(grepl(
-      paste0("X2 = ", round(expected_test$statistic, 2)),
-      label_text
-    ))
-    expect_true(grepl(
-      paste0("df = ", expected_test$parameter),
-      label_text
-    ))
-  })
-
-  it("works without weight argument", {
-    set.seed(42)
-    df <- data.frame(
-      x = sample(c("A", "B"), 50, replace = TRUE),
-      fill = sample(c("Y", "N"), 50, replace = TRUE)
-    )
-    p <- ggplot(df) +
-      geom_marimekko(aes(x = x, fill = fill)) +
-      annotate_chisq(df, x, fill)
-    expect_no_error(print(p))
-  })
-})
-
 describe("plotly conversion", {
   it("converts geom_marimekko to plotly", {
     skip_if_not_installed("plotly")
@@ -874,16 +831,6 @@ describe("visual regression", {
         geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
         facet_wrap(~Sex) +
         scale_x_marimekko()
-    })
-  })
-
-  it("chi-squared annotation", {
-    skip_if_not_installed("vdiffr")
-    vdiffr::expect_doppelganger("titanic-chisq", {
-      ggplot(titanic_df) +
-        geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-        scale_x_marimekko() +
-        annotate_chisq(titanic_df, Class, Survived, weight = Freq)
     })
   })
 

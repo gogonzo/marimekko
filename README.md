@@ -61,7 +61,6 @@ The formula encodes both variable order and split direction:
 | Jittered points in tiles         | `geom_marimekko_jitter()`      |
 | Category labels on x-axis        | `scale_x_marimekko()`          |
 | Fill labels on y-axis            | `scale_y_marimekko()`          |
-| Chi-squared test annotation      | `annotate_chisq()`             |
 | Compute tiles without plotting   | `fortify_marimekko()`          |
 | Minimal mosaic theme             | `theme_marimekko()`            |
 | Pearson residual shading         | `after_stat(.resid)`           |
@@ -110,8 +109,7 @@ ggplot(titanic) +
     formula = ~ Class | Survived
   ) +
   scale_x_marimekko() +
-  scale_alpha_continuous(range = c(0.3, 1), guide = "none") +
-  annotate_chisq(titanic, Class, Survived, weight = Freq)
+  scale_alpha_continuous(range = c(0.3, 1), guide = "none")
 ```
 
 ### Jittered observations

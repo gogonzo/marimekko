@@ -28,7 +28,6 @@ VignetteBuilder: knitr
 Config/testthat/edition: 3
 Collate:
     'marimekko-package.R'
-    'annotate-chisq.R'
     'fortify-marimekko.R'
     'stat-marimekko.R'
     'geom-marimekko-jitter.R'

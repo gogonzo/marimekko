@@ -47,7 +47,6 @@ showing each ggmosaic pattern and its marimekko equivalent.
 | `scale_y_productlist()` | `scale_y_marimekko()` | |
 | `product()` | *not needed* | Use `formula = ~ a \| b` or `aes(x = ..., fill = ...)` |
 | — | `geom_marimekko_label()` | New: text with background box |
-| — | `annotate_chisq()` | New: chi-squared test annotation |
 | — | `fortify_marimekko()` | New: extract tile data as data frame |
 
 ## Side-by-side examples
@@ -457,7 +456,6 @@ ggplot(hair) +
     Brown = "#8B4513", Blue = "#4682B4",
     Hazel = "#C4A265", Green = "#228B22"
   )) +
-  annotate_chisq(hair, Hair, Eye, weight = Freq) +
   theme_marimekko()
 ```
 
