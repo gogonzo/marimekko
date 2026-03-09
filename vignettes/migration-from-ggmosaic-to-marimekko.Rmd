@@ -45,7 +45,7 @@ showing each ggmosaic pattern and its marimekko equivalent.
 | `theme_mosaic()` | `theme_marimekko()` | |
 | `scale_x_productlist()` | *not needed* | Axis labels are automatic; use `show_percentages = TRUE` in `geom_marimekko()` |
 | `scale_y_productlist()` | *not needed* | Axis labels are automatic |
-| `product()` | *not needed* | Use `formula = ~ a \| b` or `aes(x = ..., fill = ...)` |
+| `product()` | *not needed* | Use `formula = ~ a \| b` |
 | — | `geom_marimekko_label()` | New: text with background box |
 | — | `fortify_marimekko()` | New: extract tile data as data frame |
 
@@ -70,9 +70,7 @@ ggplot(data = titanic) +
 ```{r one-var}
 # marimekko — one variable
 ggplot(titanic) +
-  geom_marimekko(aes(fill = Class, weight = Freq),
-    formula = ~Class
-  ) +
+  geom_marimekko(aes(fill = Class, weight = Freq), formula = ~Class) +
   theme_marimekko() +
   labs(title = "One variable: f(Class)")
 ```
@@ -97,9 +95,9 @@ ggplot(titanic) +
 ```
 
 
-The main difference: **no `product()` wrapper** — just pass the variable
-directly to `x`. marimekko does not have a `divider` argument; it always
-produces vertical columns with horizontal stacking.
+The main difference: **no `product()` wrapper** — use `formula = ~ Var`
+instead. marimekko does not have a `divider` argument; it always produces
+vertical columns with horizontal stacking.
 
 ### Two dimensional — mosaic plot and stacked bar chart
 
@@ -123,10 +121,7 @@ ggplot(titanic) +
     formula = ~ Class | Survived
   ) +
   theme_marimekko() +
-  labs(
-    title = "Two variables: f(Survived | Class) f(Class)",
-    y = "Survived", x = "Class"
-  )
+  labs(title = "Two variables: f(Survived | Class) f(Class)")
 ```
 
 ### Three dimensional 
@@ -135,40 +130,23 @@ The paper shows two-dimensional mosaic plots where variable order in `product()`
 controls the partitioning hierarchy (Figure 3):
 
 ```r
-ggplot(data = titanic) +
-  geom_mosaic(aes(
-    x = product(Class, Survived, Sex),
-    fill = Survived,
-    weight = Freq,
-    alpha = Class
-  ))
-```
-
-
-
-```r
 # ggmosaic — double-decker variables
 ggplot(data = titanic) +
   geom_mosaic(aes(
-    x = product(Class, Survived, Sex),
+    x = product(Survived, Class, Sex),
     fill = Survived,
     weight = Freq,
-    alpha = Class
-  ), divider = ddecker()) + 
-  theme_bw()
+  ), divider = ddecker())
 ```
 
 ```{r three-var-multi}
 # marimekko — three variables via formula
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
-    formula = ~ Sex | Class | Survived
+    formula = ~ Sex + Class | Survived
   ) +
   theme_marimekko() +
-  labs(
-    title = "Three variables: f(Survived | Class, Sex)",
-    y = "Survived", x = "Sex"
-  )
+  labs(title = "Three variables: f(Survived | Class, Sex)")
 ```
 
 
@@ -179,21 +157,21 @@ another level of partitioning (Figure 4):
 
 ```r
 # ggmosaic — three variables via product()
-ggplot(data = flights) +
+ggplot(data = titanic) +
   geom_mosaic(aes(
-    x = product(eliminate_reclining, do_you_recline, rude_to_recline),
-    fill = do_you_recline,
-    alpha = eliminate_reclining
-  )) +
-  scale_alpha_manual(values = c(.7, .9))
+    x = product(Sex, Survived, Class),
+    fill = Survived,
+    weight = Freq
+  ))
 ```
 
 ```{r three-var}
 # marimekko — three variables via formula
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
-    formula = ~ Class | Sex | Survived
+    formula = ~ Class | Survived | Sex
   ) +
+  theme_marimekko() +
   labs(title = "Three variables: Class / Sex / Survived")
 ```
 
@@ -203,11 +181,12 @@ The paper shows how `conds` creates conditional distributions (Section 3.2):
 
 ```r
 # ggmosaic — conditioning
-ggplot(data = flights) +
+ggplot(data = titanic) +
   geom_mosaic(aes(
-    x = product(do_you_recline),
-    fill = do_you_recline,
-    conds = product(rude_to_recline)
+    x = product(Class),
+    fill = Survived,
+    weight = Freq,
+    conds = product(Sex)
   ))
 ```
 
@@ -220,16 +199,8 @@ ggplot(titanic) +
     formula = ~ Class | Survived
   ) +
   facet_wrap(~Sex) +
+  theme_marimekko() +
   labs(title = "f(Survived | Class) conditioned on Sex")
-```
-
-Or use a three-variable formula to keep everything in one panel:
-
-```{r conds-multi}
-ggplot(titanic) +
-  geom_marimekko(aes(fill = Survived, weight = Freq),
-    formula = ~ Class | Sex | Survived
-  )
 ```
 
 ### Faceting
@@ -239,11 +210,11 @@ The paper demonstrates `facet_grid()` as an alternative to conditioning
 
 ```r
 # ggmosaic — faceting
-ggplot(data = flights) +
+ggplot(data = titanic) +
   geom_mosaic(aes(
-    x = product(do_you_recline), fill = do_you_recline
-  ), divider = "vspine") +
-  facet_grid(~rude_to_recline)
+    x = product(Class), fill = Survived, weight = Freq
+  )) +
+  facet_grid(~Sex)
 ```
 
 ```{r facet}
@@ -253,6 +224,7 @@ ggplot(titanic) +
     formula = ~ Class | Survived
   ) +
   facet_wrap(~Sex) +
+  theme_marimekko() +
   labs(title = "Mosaic faceted by Sex")
 ```
 
@@ -284,6 +256,7 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
+  theme_marimekko() +
   labs(title = "Mosaic plot (proportional-width columns)")
 ```
 
@@ -293,9 +266,9 @@ The paper shows how `offset` controls gaps between tiles (Section 5):
 
 ```r
 # ggmosaic — single offset parameter
-ggplot(data = flights) +
+ggplot(data = titanic) +
   geom_mosaic(aes(
-    x = product(do_you_recline, region), fill = do_you_recline
+    x = product(Class), fill = Survived, weight = Freq
   ), offset = 0.02)
 ```
 
@@ -305,18 +278,10 @@ marimekko provides independent `gap_x` and `gap_y` parameters:
 # marimekko — no gaps
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
-    formula = ~ Class | Survived, gap_x = 0, gap_y = 0
+    formula = ~ Class | Survived, gap_x = 0.02, gap_y = 0.02
   ) +
+  theme_marimekko() +
   labs(title = "No gaps")
-```
-
-```{r gaps2}
-# marimekko — wider gaps
-ggplot(titanic) +
-  geom_marimekko(aes(fill = Survived, weight = Freq),
-    formula = ~ Class | Survived, gap_x = 0.04, gap_y = 0.02
-  ) +
-  labs(title = "Wider gaps (gap_x = 0.04, gap_y = 0.02)")
 ```
 
 ### Text labels
@@ -338,7 +303,8 @@ ggplot(titanic) +
   ) +
   geom_marimekko_text(aes(
     label = after_stat(paste(Class, Survived, sep = "\n"))
-  ))
+  )) +
+  theme_marimekko()
 ```
 
 `geom_marimekko_text()` reads tile positions from the preceding
@@ -386,6 +352,7 @@ ggplot(titanic) +
     formula = ~ Class | Survived, alpha = 0.3
   ) +
   geom_marimekko_jitter(seed = 42, size = 0.5) +
+  theme_marimekko() +
   labs(title = "Jittered points reveal underlying density")
 ```
 
@@ -404,13 +371,9 @@ hair <- as.data.frame(HairEyeColor)
 ```{r hair-mosaic}
 ggplot(hair) +
   geom_marimekko(aes(fill = Eye, weight = Freq),
-    formula = ~ Hair | Eye
+    formula = ~ Hair | Eye,
     show_percentages = TRUE
   ) +
-  scale_fill_manual(values = c(
-    Brown = "#8B4513", Blue = "#4682B4",
-    Hazel = "#C4A265", Green = "#228B22"
-  )) +
   theme_marimekko() +
   labs(title = "Hair color vs Eye color")
 ```
@@ -422,25 +385,8 @@ ggplot(hair) +
   geom_marimekko(aes(fill = Eye, weight = Freq),
     formula = ~ Hair | Sex | Eye
   ) +
-  scale_fill_manual(values = c(
-    Brown = "#8B4513", Blue = "#4682B4",
-    Hazel = "#C4A265", Green = "#228B22"
-  )) +
+  theme_marimekko() +
   labs(title = "Hair / Sex / Eye")
-```
-
-With a chi-squared annotation:
-
-```{r hair-chisq}
-ggplot(hair) +
-  geom_marimekko(aes(fill = Eye, weight = Freq),
-    formula = ~ Hair | Eye
-  ) +
-  scale_fill_manual(values = c(
-    Brown = "#8B4513", Blue = "#4682B4",
-    Hazel = "#C4A265", Green = "#228B22"
-  )) +
-  theme_marimekko()
 ```
 
 ## Key differences to be aware of

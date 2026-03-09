@@ -80,9 +80,8 @@
 #'   `gap`).
 #' @param gap_y Numeric. Vertical gap override. Default `NULL` (uses
 #'   `gap`).
-#' @param colour Tile border colour. Default `NULL`, which matches
-#'   the `fill` colour so borders blend in. Set to `"white"` or
-#'   another colour to override.
+#' @param colour Tile border colour. Default `NULL` (no border).
+#'   Can also be mapped via `aes(colour = variable)`.
 #' @param alpha Tile transparency. Default `0.9`.
 #' @param show_percentages Logical. If `TRUE`, appends marginal
 #'   percentage to each x-axis label. Default `FALSE`.
@@ -91,6 +90,34 @@
 #' @param inherit.aes Logical. Inherit aesthetics from `ggplot()`.
 #'   Default `TRUE`.
 #' @param ... Additional arguments passed to the layer.
+#'
+#' @section Computed variables:
+#'
+#' The stat computes the following variables that can be accessed with
+#' [ggplot2::after_stat()]:
+#'
+#' \describe{
+#'   \item{`.proportion`}{Conditional proportion of the tile within its
+#'     immediate parent. For a formula `~ a | b`, this is the proportion
+#'     of `b` within each level of `a`, i.e. \eqn{P(b \mid a)}.
+#'     Values sum to 1 within each parent tile. Useful for mapping to
+#'     `alpha` to fade tiles by their local share:
+#'     `aes(alpha = after_stat(.proportion))`.}
+#'   \item{`.marginal`}{Joint (marginal) proportion of the tile relative to
+#'     the whole dataset, i.e. \eqn{n_\text{cell} / N}. Values sum to 1
+#'     across all tiles. Used internally for x-axis percentage labels when
+#'     `show_percentages = TRUE`, and can be mapped to aesthetics to
+#'     emphasise cells by overall frequency.}
+#'   \item{`.residuals`}{Pearson residual measuring departure from statistical
+#'     independence between the horizontal and vertical variable groups.
+#'     Computed as \eqn{(O - E) / \sqrt{E}}, where \eqn{O} is the observed
+#'     cell count and \eqn{E} is the count expected under independence.
+#'     Positive values indicate the cell is **more** frequent than expected;
+#'     negative values indicate **less** frequent. When only one direction
+#'     (all horizontal or all vertical) is present, `.residuals` is set to 0.
+#'     Map to `alpha` or `fill` to highlight deviations:
+#'     `aes(alpha = after_stat(abs(.residuals)))`.}
+#' }
 #'
 #' @return A list of ggplot2 layers (geom + axis scales).
 #'
@@ -131,7 +158,7 @@
 #' # Highlight cells that deviate from independence
 #' ggplot(titanic) +
 #'   geom_marimekko(
-#'     aes(fill = Survived, alpha = after_stat(abs(.resid)), weight = Freq),
+#'     aes(fill = Survived, alpha = after_stat(abs(.residuals)), weight = Freq),
 #'     formula = ~ Class | Survived
 #'   ) +
 #'   guides(alpha = "none")
@@ -149,17 +176,8 @@ geom_marimekko <- function(mapping = NULL, data = NULL,
                            show.legend = NA,
                            inherit.aes = TRUE,
                            ...) {
-  # Backward-compatible: auto-construct formula from x and fill aesthetics
-
   if (is.null(formula)) {
-    if ("x" %in% names(mapping) && "fill" %in% names(mapping)) {
-      x_expr <- all.vars(mapping[["x"]])
-      fill_expr <- all.vars(mapping[["fill"]])
-      formula <- stats::as.formula(paste("~", x_expr, "|", fill_expr))
-      mapping[["x"]] <- NULL
-    } else {
-      stop("`formula` is required. Example: formula = ~ Class | Survived")
-    }
+    stop("`formula` is required. Example: formula = ~ Class | Survived")
   }
 
   # Parse formula into variable groups and assign directions
@@ -190,9 +208,13 @@ geom_marimekko <- function(mapping = NULL, data = NULL,
     na.rm = na.rm,
     ...
   )
-  # Only set colour as a fixed param when explicitly provided
+  # colour: if explicitly provided, use as fixed param;
+
+  # if not provided and not mapped via aes(), default to NA (no border)
   if (!is.null(colour)) {
     params$colour <- colour
+  } else if (!"colour" %in% names(mapping)) {
+    params$colour <- NA
   }
   # Only set alpha as a fixed param when not mapped as an aesthetic
   if (!"alpha" %in% names(mapping)) {
@@ -235,7 +257,13 @@ geom_marimekko <- function(mapping = NULL, data = NULL,
     info$label
   }
 
-  list(
+  # Build automatic axis labels from formula variables
+  h_vars <- variable_names[variable_directions == "h"]
+  v_vars <- variable_names[variable_directions == "v"]
+  x_lab <- if (length(h_vars) > 0) paste(h_vars, collapse = " : ") else waiver()
+  y_lab <- if (length(v_vars) > 0) paste(v_vars, collapse = " : ") else waiver()
+
+  result <- list(
     layer(
       data = data,
       mapping = mapping,
@@ -251,12 +279,20 @@ geom_marimekko <- function(mapping = NULL, data = NULL,
       labels = .x_labels_fn,
       expand = expansion(mult = 0.01)
     ),
-    scale_y_continuous(
-      breaks = .y_breaks_fn,
-      labels = .y_labels_fn,
-      expand = expansion(mult = 0.01)
-    )
+    labs(x = x_lab, y = y_lab)
   )
+
+  if (length(v_vars) > 0) {
+    result <- c(result, list(
+      scale_y_continuous(
+        breaks = .y_breaks_fn,
+        labels = .y_labels_fn,
+        expand = expansion(mult = 0.01)
+      )
+    ))
+  }
+
+  result
 }
 
 # --- Formula parsing ---
@@ -479,11 +515,11 @@ Statmarimekko <- ggproto("Statmarimekko", Stat,
       grand <- sum(ct)
       expected <- outer(row_sums, col_sums) / grand
       pr <- (ct - expected) / sqrt(pmax(expected, .Machine$double.eps))
-      tiles$.resid <- vapply(seq_len(nrow(tiles)), function(k) {
+      tiles$.residuals <- vapply(seq_len(nrow(tiles)), function(k) {
         pr[h_key[k], v_key[k]]
       }, numeric(1))
     } else {
-      tiles$.resid <- 0
+      tiles$.residuals <- 0
     }
 
     # --- x-axis labels: composite of all h-variable values ---
@@ -498,8 +534,16 @@ Statmarimekko <- ggproto("Statmarimekko", Stat,
         label = horizontal_label,
         stringsAsFactors = FALSE
       )
-      x_label_data <- x_label_data[!duplicated(x_label_data$label), , drop = FALSE]
-      x_label_data$pct <- NA_real_
+      x_label_data$pct <- tiles$.marginal
+      x_label_data <- do.call(rbind, lapply(split(x_label_data, x_label_data$label), function(d) {
+        data.frame(
+          x_mid = d$x_mid[1],
+          label = d$label[1],
+          pct = sum(d$pct),
+          stringsAsFactors = FALSE
+        )
+      }))
+      rownames(x_label_data) <- NULL
       .marimekko_env$labels <- x_label_data
     }
 

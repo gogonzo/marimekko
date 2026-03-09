@@ -3,7 +3,7 @@
 \docType{data}
 \name{marimekko_pal}
 \alias{marimekko_pal}
-\title{Earthy Nordic colour palette}
+\title{Unikko-inspired colour palette}
 \format{
 An object of class \code{character} of length 8.
 }
@@ -11,8 +11,8 @@ An object of class \code{character} of length 8.
 marimekko_pal
 }
 \description{
-A character vector of 8 earthy, Nordic-inspired colours for use with
-marimekko plots. Muted natural tones that work well for categorical
-data visualisation.
+A character vector of 8 bold colours inspired by Marimekko's iconic
+Unikko poppy pattern. Vibrant, high-contrast tones suited for
+categorical data visualisation.
 }
 \keyword{datasets}

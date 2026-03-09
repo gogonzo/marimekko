@@ -11,7 +11,7 @@ geom_marimekko_label(
   ...,
   size = 3.5,
   colour = "black",
-  fill = "white",
+  fill = alpha("white", 0.7),
   label.padding = unit(0.15, "lines"),
   na.rm = FALSE,
   show.legend = FALSE,
@@ -31,9 +31,9 @@ positions come from \code{\link[=geom_marimekko]{geom_marimekko()}}).}
 
 \item{size}{Text size. Default \code{3.5}.}
 
-\item{colour}{Text colour. Default \code{"black"}.}
+\item{colour}{Text colour. Default \code{"white"} for text, \code{"black"} for labels.}
 
-\item{fill}{Label background colour. Default \code{"white"}.}
+\item{fill}{Label background colour. Default \code{alpha("white", 0.7)}.}
 
 \item{label.padding}{Amount of padding around label. Default
 \code{ggplot2::unit(0.15, "lines")}.}

@@ -30,11 +30,7 @@ basics shown in `vignette("getting-started")`.
 
 ```{r basic}
 ggplot(titanic) +
-  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
-  labs(
-    title = "Marimekko plot",
-    y = "Proportion"
-  )
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived)
 ```
 
 ## Pearson residuals
@@ -44,7 +40,7 @@ independence assumption. Positive residuals indicate more observations
 than expected; negative residuals indicate fewer.
 
 Residuals are automatically computed and exposed as the
-`.resid` computed variable, which you can map to an aesthetic via
+`.residuals` computed variable, which you can map to an aesthetic via
 `after_stat()`:
 
 ```{r residuals}
@@ -52,7 +48,7 @@ ggplot(titanic) +
   geom_marimekko(
     aes(
       fill = Survived, weight = Freq,
-      alpha = after_stat(abs(.resid))
+      alpha = after_stat(abs(.residuals))
     ),
     formula = ~ Class | Survived
   ) +
@@ -68,7 +64,7 @@ ggplot(titanic) +
     formula = ~ Class | Survived
   ) +
   geom_marimekko_text(aes(
-    label = after_stat(round(.resid, 1))
+    label = after_stat(round(.residuals, 1))
   ), colour = "white", size = 3) +
   labs(title = "Pearson residuals as labels")
 ```
@@ -156,7 +152,7 @@ The returned columns are:
 | `weight` | Aggregated count |
 | `.proportion` | Conditional proportion within the parent tile |
 | `.marginal` | Proportion of the grand total |
-| `.resid` | Pearson residual |
+| `.residuals` | Pearson residual |
 
 ## Extending with custom ggplot2 layers
 
@@ -185,7 +181,7 @@ tiles <- fortify_marimekko(titanic,
 )
 
 # Highlight cells with significant residuals
-tiles$significant <- abs(tiles$.resid) > 2
+tiles$significant <- abs(tiles$.residuals) > 2
 
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
@@ -193,7 +189,7 @@ ggplot(titanic) +
   ) +
   geom_label(
     data = tiles[tiles$significant, ],
-    aes(x = x, y = y, label = paste0("r=", round(.resid, 1))),
+    aes(x = x, y = y, label = paste0("r=", round(.residuals, 1))),
     fill = "yellow", size = 3, fontface = "bold"
   ) +
   labs(title = "Significant deviations from independence (|r| > 2)")
@@ -213,19 +209,19 @@ ggplot(titanic) +
   geom_marimekko(
     aes(
       fill = Survived, weight = Freq,
-      alpha = after_stat(abs(.resid))
+      alpha = after_stat(abs(.residuals))
     ),
     formula = ~ Class | Survived,
     show_percentages = TRUE
   ) +
   geom_marimekko_text(aes(label = after_stat(weight)),
-    colour = "white", size = 3.5) +
+    colour = "white", size = 3.5
+  ) +
   scale_alpha_continuous(range = c(0.4, 1), guide = "none") +
   theme_marimekko() +
   labs(
     title = "Full-featured mosaic plot",
-    subtitle = "Residual shading + counts + marginal %",
-    y = "Proportion"
+    subtitle = "Residual shading + counts + marginal %"
   )
 ```
 
@@ -253,17 +249,14 @@ ggplot(titanic) +
 
 ## Colour palette
 
-`marimekko` ships with an earthy, Nordic-inspired colour palette and
-companion scale functions. Use `scale_fill_marimekko()` and
-`scale_colour_marimekko()` for a consistent look:
+`marimekko` ships with an Marimekko inspired color pallette. Use `theme_marimekko()` oe use 
+`scale_fill_manual(palette = marimekko_pal)`:
 
 ```{r palette}
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_fill_marimekko() +
-  scale_colour_marimekko() +
   theme_marimekko() +
   labs(title = "Earthy Nordic palette")
 ```
@@ -276,7 +269,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived, colour = "white"
   ) +
-  scale_fill_marimekko() +
   theme_marimekko() +
   labs(title = "White borders with marimekko palette")
 ```
@@ -305,7 +297,7 @@ expressions — both in formulas and inside `aes()`:
 ggplot(mtcars) +
   geom_marimekko(formula = ~ factor(cyl) | factor(gear)) +
   labs(
-    x = "Cylinders", fill = "Gears",
+    y = "Gears", fill = "Gears",
     title = "factor() inside formula works"
   )
 ```

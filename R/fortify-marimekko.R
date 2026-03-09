@@ -19,7 +19,7 @@
 #'
 #' @return A data frame with columns for each formula variable, plus
 #'   `fill`, `colour`, `xmin`, `xmax`, `ymin`, `ymax`, `x`, `y`,
-#'   `weight`, `.proportion`, `.marginal`, and `.resid`.
+#'   `weight`, `.proportion`, `.marginal`, and `.residuals`.
 #'
 #' @examples
 #' titanic <- as.data.frame(Titanic)

@@ -35,7 +35,7 @@ Example: \code{~ Class | Survived}.}
 \value{
 A data frame with columns for each formula variable, plus
 \code{fill}, \code{colour}, \code{xmin}, \code{xmax}, \code{ymin}, \code{ymax}, \code{x}, \code{y},
-\code{weight}, \code{.proportion}, \code{.marginal}, and \code{.resid}.
+\code{weight}, \code{.proportion}, \code{.marginal}, and \code{.residuals}.
 }
 \description{
 Compute marimekko tile rectangles as a data frame

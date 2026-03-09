@@ -35,7 +35,7 @@ StatmarimekkoTiles <- ggproto("StatmarimekkoTiles", Stat,
 #' The `label` aesthetic can reference computed variables via
 #' [ggplot2::after_stat()]: `weight` (count), `.proportion` (conditional
 #' proportion within parent tile), `cond_prop` (alias for `.proportion`),
-#' `.resid` (Pearson residual).
+#' `.residuals` (Pearson residual).
 #'
 #' @param mapping Set of aesthetic mappings. Only `label` is required.
 #'   Use [ggplot2::after_stat()] for computed variables.
@@ -43,7 +43,7 @@ StatmarimekkoTiles <- ggproto("StatmarimekkoTiles", Stat,
 #'   positions come from [geom_marimekko()]).
 #' @param position Position adjustment. Default `"identity"`.
 #' @param size Text size. Default `3.5`.
-#' @param colour Text colour. Default `"black"`.
+#' @param colour Text colour. Default `"white"` for text, `"black"` for labels.
 #' @param na.rm Logical. Remove missing values. Default `FALSE`.
 #' @param show.legend Logical. Show legend. Default `FALSE`.
 #' @param inherit.aes Logical. Inherit aesthetics. Default `FALSE`.
@@ -67,7 +67,7 @@ geom_marimekko_text <- function(mapping = NULL, data = NULL,
                                 position = "identity",
                                 ...,
                                 size = 3.5,
-                                colour = "black",
+                                colour = "white",
                                 na.rm = FALSE,
                                 show.legend = FALSE,
                                 inherit.aes = FALSE) {
@@ -96,7 +96,7 @@ geom_marimekko_text <- function(mapping = NULL, data = NULL,
 #' uses [ggplot2::GeomLabel] to draw a filled box behind the text.
 #'
 #' @inheritParams geom_marimekko_text
-#' @param fill Label background colour. Default `"white"`.
+#' @param fill Label background colour. Default `alpha("white", 0.7)`.
 #' @param label.padding Amount of padding around label. Default
 #'   `ggplot2::unit(0.15, "lines")`.
 #' @return A ggplot2 layer.
@@ -118,7 +118,7 @@ geom_marimekko_label <- function(mapping = NULL, data = NULL,
                                  ...,
                                  size = 3.5,
                                  colour = "black",
-                                 fill = "white",
+                                 fill = alpha("white", 0.7),
                                  label.padding = unit(0.15, "lines"),
                                  na.rm = FALSE,
                                  show.legend = FALSE,

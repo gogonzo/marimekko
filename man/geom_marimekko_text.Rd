@@ -10,7 +10,7 @@ geom_marimekko_text(
   position = "identity",
   ...,
   size = 3.5,
-  colour = "black",
+  colour = "white",
   na.rm = FALSE,
   show.legend = FALSE,
   inherit.aes = FALSE
@@ -29,7 +29,7 @@ positions come from \code{\link[=geom_marimekko]{geom_marimekko()}}).}
 
 \item{size}{Text size. Default \code{3.5}.}
 
-\item{colour}{Text colour. Default \code{"black"}.}
+\item{colour}{Text colour. Default \code{"white"} for text, \code{"black"} for labels.}
 
 \item{na.rm}{Logical. Remove missing values. Default \code{FALSE}.}
 

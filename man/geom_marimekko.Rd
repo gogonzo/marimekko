@@ -49,9 +49,8 @@ Default \code{0.01}.}
 \item{gap_y}{Numeric. Vertical gap override. Default \code{NULL} (uses
 \code{gap}).}
 
-\item{colour}{Tile border colour. Default \code{NULL}, which matches
-the \code{fill} colour so borders blend in. Set to \code{"white"} or
-another colour to override.}
+\item{colour}{Tile border colour. Default \code{NULL} (no border).
+Can also be mapped via \code{aes(colour = variable)}.}
 
 \item{alpha}{Tile transparency. Default \code{0.9}.}
 
@@ -131,6 +130,36 @@ and direction in a single formula. The \code{|} operator makes the
 alternating pattern explicit and readable.
 }
 
+\section{Computed variables}{
+
+
+The stat computes the following variables that can be accessed with
+\code{\link[ggplot2:aes_eval]{ggplot2::after_stat()}}:
+
+\describe{
+\item{\code{.proportion}}{Conditional proportion of the tile within its
+immediate parent. For a formula \code{~ a | b}, this is the proportion
+of \code{b} within each level of \code{a}, i.e. \eqn{P(b \mid a)}.
+Values sum to 1 within each parent tile. Useful for mapping to
+\code{alpha} to fade tiles by their local share:
+\code{aes(alpha = after_stat(.proportion))}.}
+\item{\code{.marginal}}{Joint (marginal) proportion of the tile relative to
+the whole dataset, i.e. \eqn{n_\text{cell} / N}. Values sum to 1
+across all tiles. Used internally for x-axis percentage labels when
+\code{show_percentages = TRUE}, and can be mapped to aesthetics to
+emphasise cells by overall frequency.}
+\item{\code{.residuals}}{Pearson residual measuring departure from statistical
+independence between the horizontal and vertical variable groups.
+Computed as \eqn{(O - E) / \sqrt{E}}, where \eqn{O} is the observed
+cell count and \eqn{E} is the count expected under independence.
+Positive values indicate the cell is \strong{more} frequent than expected;
+negative values indicate \strong{less} frequent. When only one direction
+(all horizontal or all vertical) is present, \code{.residuals} is set to 0.
+Map to \code{alpha} or \code{fill} to highlight deviations:
+\code{aes(alpha = after_stat(abs(.residuals)))}.}
+}
+}
+
 \examples{
 library(ggplot2)
 
@@ -168,7 +197,7 @@ ggplot(titanic) +
 # Highlight cells that deviate from independence
 ggplot(titanic) +
   geom_marimekko(
-    aes(fill = Survived, alpha = after_stat(abs(.resid)), weight = Freq),
+    aes(fill = Survived, alpha = after_stat(abs(.residuals)), weight = Freq),
     formula = ~ Class | Survived
   ) +
   guides(alpha = "none")

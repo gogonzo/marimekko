@@ -177,7 +177,7 @@ ggplot(titanic) +
 # Highlight only cells with |residual| > 2 (significant deviation)
 # Step 1: compute tiles with fortify_marimekko
 tiles <- fortify_marimekko(titanic, formula = ~ Class | Survived, weight = Freq)
-tiles$significant <- ifelse(abs(tiles$.resid) > 2, "significant", "not significant")
+tiles$significant <- ifelse(abs(tiles$.residuals) > 2, "significant", "not significant")
 
 ggplot(tiles) +
   geom_rect(aes(
@@ -190,12 +190,12 @@ ggplot(tiles) +
   ))
 
 # --- fill by residual sign (positive = over-represented, negative = under-represented) ---
-tiles$direction <- ifelse(tiles$.resid > 0, "over-represented", "under-represented")
+tiles$direction <- ifelse(tiles$.residuals > 0, "over-represented", "under-represented")
 
 ggplot(tiles) +
   geom_rect(aes(
     xmin = xmin, xmax = xmax, ymin = ymin, ymax = ymax,
-    fill = direction, alpha = abs(tiles$.resid)
+    fill = direction, alpha = abs(tiles$.residuals)
   ), colour = "white") +
   scale_fill_manual(values = c(
     "over-represented" = "steelblue",

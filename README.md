@@ -1,4 +1,4 @@
-# marimekko
+# marimekko <img src="man/figures/logo.svg" align="right" height="139" alt="marimekko logo" />
 
 [![R-CMD-check](https://github.com/gogonzo/marimekko/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/gogonzo/marimekko/actions/workflows/R-CMD-check.yaml)
 [![codecov](https://codecov.io/gh/gogonzo/marimekko/graph/badge.svg)](https://codecov.io/gh/gogonzo/marimekko)
@@ -8,13 +8,15 @@ marimekko (mosaic) plots for **ggplot2**.
 
 A one-sided formula controls the variable hierarchy and split directions.
 Column widths and segment heights encode marginal and conditional
-proportions of categorical variables. A simpler, lighter alternative to
-[ggmosaic](https://github.com/haleyjeppson/ggmosaic).
+proportions of categorical variables.
 
 ## Installation
 
 ```r
-# Install from GitHub
+# Install from CRAN
+install.packages("marimekko")
+
+# Or install the development version from GitHub
 devtools::install_github("gogonzo/marimekko")
 ```
 
@@ -37,34 +39,65 @@ ggplot(titanic) +
 
 ## Formula syntax
 
-The formula encodes both variable order and split direction:
+A one-sided formula (`~ ...`) controls which variables are used, their
+nesting order, and how each level splits the plot area. The plot starts
+as a single rectangle (the unit square) and each variable subdivides it
+further.
 
-| Formula             | Splits                           | Pattern           |
-| ------------------- | -------------------------------- | ----------------- |
-| `~ a \| b`          | h(a), v(b)                       | Standard mosaic   |
-| `~ a \| b \| c`     | h(a), v(b), h(c)                 | Alternating       |
-| `~ a + b \| c`      | h(a), h(b), v(c)                 | Double decker     |
-| `~ a \| b + c`      | h(a), v(b), v(c)                 | Multiple vertical |
+### Split directions
 
-- `|` alternates split direction (h → v → h → ...)
-- `+` groups variables at the same level (same direction)
-- Arbitrary expressions work: `~ factor(cyl) | cut(mpg, breaks = 3)`
+There are two split directions:
+
+- **Horizontal split** — divides the area into **side-by-side columns**
+  along the x-axis. Column widths are proportional to the variable's
+  distribution. All columns share the same vertical extent.
+- **Vertical split** — divides the area into **stacked rows** along the
+  y-axis. Row heights are proportional to the variable's distribution.
+  All rows share the same horizontal extent.
+
+The first variable always splits **horizontally** (columns). Each `|`
+switches direction, so the second variable splits **vertically** (rows
+within each column), the third switches back to horizontal, and so on.
+
+### Operators
+
+| Operator | Meaning                                                                                             |
+| -------- | --------------------------------------------------------------------------------------------------- |
+| `\|`     | Separates groups of variables. Each `\|` flips the split direction (horizontal ↔ vertical).         |
+| `+`      | Combines variables within the same group — they split in the **same** direction, one after another. |
+
+### Examples
+
+| Formula         | 1st split                             | 2nd split                                | 3rd split         | Layout              |
+| --------------- | ------------------------------------- | ---------------------------------------- | ----------------- | ------------------- |
+| `~ a \| b`      | `a` → columns (horizontal)            | `b` → rows within each column (vertical) | —                 | Standard mosaic     |
+| `~ a \| b \| c` | `a` → columns                         | `b` → rows                               | `c` → sub-columns | Alternating 3-level |
+| `~ a + b \| c`  | `a` → columns, then `b` → sub-columns | `c` → rows                               | —                 | Double decker       |
+| `~ a \| b + c`  | `a` → columns                         | `b` → rows, then `c` → sub-rows          | —                 | Multiple vertical   |
+
+### Expressions in formulas
+
+Variables in the formula can be arbitrary R expressions:
+
+```r
+~ factor(cyl) | cut(mpg, breaks = 3)
+```
 
 ## Features
 
-| Feature                          | Function / Parameter           |
-| -------------------------------- | ------------------------------ |
-| Core marimekko plot              | `geom_marimekko()`             |
-| Text labels on tiles             | `geom_marimekko_text()`        |
-| Labels with background box       | `geom_marimekko_label()`       |
-| Jittered points in tiles         | `geom_marimekko_jitter()`      |
-| Marginal percentages on x-axis   | `show_percentages = TRUE`      |
-| Compute tiles without plotting   | `fortify_marimekko()`          |
-| Minimal mosaic theme             | `theme_marimekko()`            |
-| Pearson residual shading         | `after_stat(.resid)`           |
-| Conditional proportion shading   | `after_stat(.proportion)`      |
-| Independent x/y gaps             | `gap_x` / `gap_y`             |
-| Plotly interactivity             | `plotly::ggplotly()`           |
+| Feature                        | Function / Parameter      |
+| ------------------------------ | ------------------------- |
+| Core marimekko plot            | `geom_marimekko()`        |
+| Text labels on tiles           | `geom_marimekko_text()`   |
+| Labels with background box     | `geom_marimekko_label()`  |
+| Jittered points in tiles       | `geom_marimekko_jitter()` |
+| Marginal percentages on x-axis | `show_percentages = TRUE` |
+| Compute tiles without plotting | `fortify_marimekko()`     |
+| Minimal mosaic theme           | `theme_marimekko()`       |
+| Pearson residual shading       | `after_stat(.residuals)`  |
+| Conditional proportion shading | `after_stat(.proportion)` |
+| Independent x/y gaps           | `gap_x` / `gap_y`         |
+| Plotly interactivity           | `plotly::ggplotly()`      |
 
 ## Examples
 
@@ -88,10 +121,7 @@ ggplot(titanic) +
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
-  geom_marimekko_text(aes(
-    x = Class, fill = Survived, weight = Freq,
-    label = after_stat(weight)
-  ))
+  geom_marimekko_text(aes(label = after_stat(weight)))
 ```
 
 ### Residual shading
@@ -101,7 +131,7 @@ ggplot(titanic) +
   geom_marimekko(
     aes(
       fill = Survived, weight = Freq,
-      alpha = after_stat(abs(.resid))
+      alpha = after_stat(abs(.residuals))
     ),
     formula = ~ Class | Survived
   ) +
@@ -181,16 +211,16 @@ head(tiles)
 
 - **`Statmarimekko`** parses the formula, recursively partitions the
   unit square, and returns tile rectangles (`xmin`, `xmax`, `ymin`,
-  `ymax`) with computed variables (`.resid`, `.proportion`, `.marginal`).
+  `ymax`) with computed variables (`.residuals`, `.proportion`, `.marginal`).
 - Tiles are rendered via **`GeomRect`** with sensible defaults
   (white borders, slight transparency).
 - Axis labels are automatically placed by the geom at tile midpoints.
 
-## Why not ggmosaic?
+## Why to use marimekko?
 
-`marimekko` was designed to avoid the common pain points of
-[ggmosaic](https://github.com/haleyjeppson/ggmosaic):
+`marimekko` was designed to avoid pain points in other existing packages.
 
+- **Minimal dependencies** -- `ggplot2` as only dependency
 - **No internal ggplot2 API usage** -- won't break on ggplot2 updates
 - **Formula-based API** -- `~ a | b | c` encodes both variables and directions
 - **Works without `library()`** -- `marimekko::geom_marimekko()` just works
@@ -203,5 +233,4 @@ head(tiles)
 ## Dependencies
 
 - `ggplot2` (>= 3.5.0)
-- `rlang`
 - Base R only for internals (no dplyr/tidyr)

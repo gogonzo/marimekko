@@ -10,6 +10,9 @@ template:
 
 home:
   title: "marimekko: marimekko and Mosaic Plots for ggplot2"
+  logo:
+    src: man/figures/logo.svg
+    alt: "marimekko logo"
   description: >
     Create marimekko (mosaic) plots as native ggplot2 layers.
     Column widths encode marginal proportions and segment heights encode
@@ -48,6 +51,7 @@ reference:
       Helper functions for data extraction and theming.
     contents:
       - fortify_marimekko
+      - marimekko_pal
       - theme_marimekko
 
 articles:

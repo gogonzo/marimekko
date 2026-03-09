@@ -53,7 +53,7 @@ titanic <- as.data.frame(Titanic)
 
 ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
-  labs(title = "Titanic survival by class", y = "Proportion")
+  labs(title = "Titanic survival by class")
 ```
 
 Two components are at work:
@@ -79,8 +79,9 @@ omit `weight`:
 
 ```{r unweighted}
 ggplot(mtcars) +
-  geom_marimekko(aes(x = factor(cyl), fill = factor(gear))) +
-  labs(x = "Cylinders", fill = "Gears")
+  geom_marimekko(aes(fill = factor(gear)),
+    formula = ~ cyl | gear
+  )
 ```
 
 ## Gap control
@@ -113,9 +114,10 @@ labels via the `show_percentages` parameter:
 
 ```{r pct}
 ggplot(titanic) +
-  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived,
-    show_percentages = TRUE) +
-  labs(y = "Proportion")
+  geom_marimekko(aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived,
+    show_percentages = TRUE
+  )
 ```
 
 ## Adding text labels
@@ -128,7 +130,7 @@ the `label` aesthetic is needed. Reference computed variables via
 
 - `weight` -- the aggregated count for the tile
 - `cond_prop` / `.proportion` -- the conditional proportion within the parent
-- `.resid` -- Pearson residual
+- `.residuals` -- Pearson residual
 - Original variable columns (e.g. `Class`, `Survived`)
 
 ```{r text-labels}
@@ -179,19 +181,6 @@ ggplot(as.data.frame(Titanic)) +
   geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
   facet_wrap(~Sex) +
   labs(title = "Survival by class, faceted by sex")
-```
-
-## Custom colours
-
-Since `fill` is a standard ggplot2 aesthetic, any fill scale works:
-
-```{r colours}
-haireye <- as.data.frame(HairEyeColor[, , 1])
-
-ggplot(haireye) +
-  geom_marimekko(aes(fill = Eye, weight = Freq), formula = ~ Hair | Eye) +
-  scale_fill_brewer(palette = "Set2") +
-  labs(title = "Hair vs Eye colour (males)")
 ```
 
 ## Next steps
