@@ -51,14 +51,6 @@
 #'     within each column.}
 #' }
 #'
-#' @section Comparison with other packages:
-#'
-#' Unlike `vcd::mosaic()` which uses a formula for variables and a
-#' separate `direction` vector for split directions, or
-#' `ggmosaic::geom_mosaic()` which uses `product()` with a `divider`
-#' parameter, `geom_marimekko()` encodes both variable order
-#' and direction in a single formula. The `|` operator makes the
-#' alternating pattern explicit and readable.
 #'
 #' @param mapping Aesthetic mapping. Optionally accepts `fill` and
 #'   `weight` for pre-aggregated data. If `fill` is not specified,

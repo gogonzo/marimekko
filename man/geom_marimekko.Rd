@@ -119,17 +119,6 @@ within each column.}
 }
 }
 
-\section{Comparison with other packages}{
-
-
-Unlike \code{vcd::mosaic()} which uses a formula for variables and a
-separate \code{direction} vector for split directions, or
-\code{ggmosaic::geom_mosaic()} which uses \code{product()} with a \code{divider}
-parameter, \code{geom_marimekko()} encodes both variable order
-and direction in a single formula. The \code{|} operator makes the
-alternating pattern explicit and readable.
-}
-
 \section{Computed variables}{
 
 

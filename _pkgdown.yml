@@ -16,7 +16,7 @@ home:
   description: >
     Create marimekko (mosaic) plots as native ggplot2 layers.
     Column widths encode marginal proportions and segment heights encode
-    conditional proportions. A simpler alternative to ggmosaic.
+    conditional proportions.
 
 navbar:
   structure:
