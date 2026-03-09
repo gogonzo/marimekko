@@ -16,6 +16,7 @@ A ggplot2 theme.
 }
 \description{
 Removes x-axis gridlines and adjusts spacing for mosaic plots.
+Also applies the \link{marimekko_pal} fill scale.
 }
 \examples{
 library(ggplot2)
@@ -26,7 +27,6 @@ ggplot(titanic) +
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
   theme_marimekko()
 
 }

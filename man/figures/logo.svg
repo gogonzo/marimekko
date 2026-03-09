@@ -1,0 +1,128 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 181 209" width="181" height="209">
+  <defs>
+    <clipPath id="hex">
+      <polygon points="90.5,0 181,52.25 181,156.75 90.5,209 0,156.75 0,52.25"/>
+    </clipPath>
+    <style>
+      .tile { stroke: #FAF9F6; stroke-width: 1.5; }
+    </style>
+  </defs>
+
+  <!-- Hex border -->
+  <polygon points="90.5,0 181,52.25 181,156.75 90.5,209 0,156.75 0,52.25"
+           fill="none" stroke="#264653" stroke-width="3"/>
+
+  <g clip-path="url(#hex)">
+    <rect width="181" height="209" fill="#FAF9F6"/>
+
+    <!-- Col1 Row1 - Red -->
+    <rect class="tile" x="0" y="0" width="46" height="75" fill="#E03C31">
+      <animate attributeName="width"  values="46;55;38;46" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="75;60;90;75" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+
+    <!-- Col1 Row2 - Navy -->
+    <rect class="tile" x="0" y="75" width="46" height="55" fill="#1D3557">
+      <animate attributeName="width"  values="46;55;38;46" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="y"      values="75;60;90;75"  dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="55;80;45;55"  dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+
+    <!-- Col1 Row3 - Yellow -->
+    <rect class="tile" x="0" y="130" width="46" height="79" fill="#E9C46A">
+      <animate attributeName="width"  values="46;55;38;46"   dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="y"      values="130;140;135;130" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="79;69;74;79"   dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+
+    <!-- Col2 Row1 - Green -->
+    <rect class="tile" x="46" y="0" width="38" height="50" fill="#2A6041">
+      <animate attributeName="x"      values="46;55;38;46" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="width"  values="38;42;50;38" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="50;70;40;50" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+
+    <!-- Col2 Row2 - Pink -->
+    <rect class="tile" x="46" y="50" width="38" height="68" fill="#D4668E">
+      <animate attributeName="x"      values="46;55;38;46"  dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="y"      values="50;70;40;50"  dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="width"  values="38;42;50;38"  dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="68;45;65;68"  dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+
+    <!-- Col2 Row3 - Slate -->
+    <rect class="tile" x="46" y="118" width="38" height="42" fill="#264653">
+      <animate attributeName="x"      values="46;55;38;46"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="y"      values="118;115;105;118" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="width"  values="38;42;50;38"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="42;50;48;42"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+
+    <!-- Col2 Row4 - Orange -->
+    <rect class="tile" x="46" y="160" width="38" height="49" fill="#F4A261">
+      <animate attributeName="x"      values="46;55;38;46"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="y"      values="160;165;153;160" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="width"  values="38;42;50;38"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="49;44;56;49"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+
+    <!-- Col3 Row1 - Orange -->
+    <rect class="tile" x="84" y="0" width="42" height="62" fill="#F4A261">
+      <animate attributeName="x"      values="84;97;88;84" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="width"  values="42;46;48;42" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="62;90;55;62" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+
+    <!-- Col3 Row2 - Red -->
+    <rect class="tile" x="84" y="62" width="42" height="52" fill="#E03C31">
+      <animate attributeName="x"      values="84;97;88;84" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="y"      values="62;90;55;62" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="width"  values="42;46;48;42" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="52;40;75;52" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+
+    <!-- Col3 Row3 - Navy -->
+    <rect class="tile" x="84" y="114" width="42" height="95" fill="#1D3557">
+      <animate attributeName="x"      values="84;97;88;84"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="y"      values="114;130;130;114" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="width"  values="42;46;48;42"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="95;79;79;95"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+
+    <!-- Col4 Row1 - Yellow -->
+    <rect class="tile" x="126" y="0" width="55" height="85" fill="#E9C46A">
+      <animate attributeName="x"      values="126;143;136;126" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="width"  values="55;38;45;55"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="85;50;70;85"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+
+    <!-- Col4 Row2 - Green -->
+    <rect class="tile" x="126" y="85" width="55" height="45" fill="#2A6041">
+      <animate attributeName="x"      values="126;143;136;126" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="y"      values="85;50;70;85"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="width"  values="55;38;45;55"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="45;70;55;45"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+
+    <!-- Col4 Row3 - Pink -->
+    <rect class="tile" x="126" y="130" width="55" height="79" fill="#D4668E">
+      <animate attributeName="x"      values="126;143;136;126" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="y"      values="130;120;125;130" dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="width"  values="55;38;45;55"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+      <animate attributeName="height" values="79;89;84;79"     dur="10s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1;0.4 0 0.6 1"/>
+    </rect>
+  </g>
+
+    <!-- Text background band -->
+    <rect x="0" y="88" width="181" height="33" fill="#264653" opacity="0.72" rx="2"/>
+
+    <!-- Text -->
+    <text x="90.5" y="110" text-anchor="middle"
+          font-family="'Trebuchet MS', 'Gill Sans', 'Helvetica Neue', Arial, sans-serif"
+          font-size="19" font-weight="bold" letter-spacing="2.5"
+          fill="#FAF9F6">marimekko</text>
+
+  <!-- Hex border on top -->
+  <polygon points="90.5,0 181,52.25 181,156.75 90.5,209 0,156.75 0,52.25"
+           fill="none" stroke="#264653" stroke-width="3"/>
+</svg>

@@ -11,8 +11,9 @@ geom_marimekko(
   gap = 0.01,
   gap_x = NULL,
   gap_y = NULL,
-  colour = "white",
+  colour = NULL,
   alpha = 0.9,
+  show_percentages = FALSE,
   na.rm = FALSE,
   show.legend = NA,
   inherit.aes = TRUE,
@@ -48,9 +49,13 @@ Default \code{0.01}.}
 \item{gap_y}{Numeric. Vertical gap override. Default \code{NULL} (uses
 \code{gap}).}
 
-\item{colour}{Tile border colour. Default \code{"white"}.}
+\item{colour}{Tile border colour. Default \code{NULL} (no border).
+Can also be mapped via \code{aes(colour = variable)}.}
 
 \item{alpha}{Tile transparency. Default \code{0.9}.}
+
+\item{show_percentages}{Logical. If \code{TRUE}, appends marginal
+percentage to each x-axis label. Default \code{FALSE}.}
 
 \item{na.rm}{Logical. Remove missing values. Default \code{FALSE}.}
 
@@ -62,7 +67,7 @@ Default \code{TRUE}.}
 \item{...}{Additional arguments passed to the layer.}
 }
 \value{
-A ggplot2 layer.
+A list of ggplot2 layers (geom + axis scales).
 }
 \description{
 Generalized mosaic plot with formula-based variable nesting
@@ -114,15 +119,34 @@ within each column.}
 }
 }
 
-\section{Comparison with other packages}{
+\section{Computed variables}{
 
 
-Unlike \code{vcd::mosaic()} which uses a formula for variables and a
-separate \code{direction} vector for split directions, or
-\code{ggmosaic::geom_mosaic()} which uses \code{product()} with a \code{divider}
-parameter, \code{geom_marimekko()} encodes both variable order
-and direction in a single formula. The \code{|} operator makes the
-alternating pattern explicit and readable.
+The stat computes the following variables that can be accessed with
+\code{\link[ggplot2:aes_eval]{ggplot2::after_stat()}}:
+
+\describe{
+\item{\code{.proportion}}{Conditional proportion of the tile within its
+immediate parent. For a formula \code{~ a | b}, this is the proportion
+of \code{b} within each level of \code{a}, i.e. \eqn{P(b \mid a)}.
+Values sum to 1 within each parent tile. Useful for mapping to
+\code{alpha} to fade tiles by their local share:
+\code{aes(alpha = after_stat(.proportion))}.}
+\item{\code{.marginal}}{Joint (marginal) proportion of the tile relative to
+the whole dataset, i.e. \eqn{n_\text{cell} / N}. Values sum to 1
+across all tiles. Used internally for x-axis percentage labels when
+\code{show_percentages = TRUE}, and can be mapped to aesthetics to
+emphasise cells by overall frequency.}
+\item{\code{.residuals}}{Pearson residual measuring departure from statistical
+independence between the horizontal and vertical variable groups.
+Computed as \eqn{(O - E) / \sqrt{E}}, where \eqn{O} is the observed
+cell count and \eqn{E} is the count expected under independence.
+Positive values indicate the cell is \strong{more} frequent than expected;
+negative values indicate \strong{less} frequent. When only one direction
+(all horizontal or all vertical) is present, \code{.residuals} is set to 0.
+Map to \code{alpha} or \code{fill} to highlight deviations:
+\code{aes(alpha = after_stat(abs(.residuals)))}.}
+}
 }
 
 \examples{
@@ -135,27 +159,21 @@ ggplot(titanic) +
   geom_marimekko(
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
-  ) +
-  scale_x_marimekko() +
-  scale_y_marimekko()
+  )
 
 # 3-variable mosaic (h -> v -> h)
 ggplot(titanic) +
   geom_marimekko(
     aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived | Sex
-  ) +
-  scale_x_marimekko() +
-  scale_y_marimekko()
+  )
 
 # Multi-variable fill with interaction()
 ggplot(titanic) +
   geom_marimekko(
     aes(fill = interaction(Sex, Survived), weight = Freq),
     formula = ~ Class | Sex + Survived
-  ) +
-  scale_x_marimekko() +
-  scale_y_marimekko()
+  )
 
 # Fade tiles by conditional proportion
 ggplot(titanic) +
@@ -163,18 +181,14 @@ ggplot(titanic) +
     aes(fill = Survived, alpha = after_stat(.proportion), weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
   guides(alpha = "none")
 
 # Highlight cells that deviate from independence
 ggplot(titanic) +
   geom_marimekko(
-    aes(fill = Survived, alpha = after_stat(abs(.resid)), weight = Freq),
+    aes(fill = Survived, alpha = after_stat(abs(.residuals)), weight = Freq),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
   guides(alpha = "none")
 
 }
