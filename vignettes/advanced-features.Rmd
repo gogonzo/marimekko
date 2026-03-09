@@ -69,27 +69,6 @@ ggplot(titanic) +
   labs(title = "Pearson residuals as labels")
 ```
 
-## Jittered points
-
-For small-to-medium datasets, `geom_marimekko_jitter()` scatters
-individual data points inside their corresponding mosaic tile. Each
-row is expanded by its weight, so weighted data shows the correct
-number of points.
-
-```{r jitter}
-ucb <- as.data.frame(UCBAdmissions)
-ucb_a <- ucb[ucb$Dept == "A", ]
-
-ggplot(ucb_a) +
-  geom_marimekko(aes(fill = Admit, weight = Freq),
-    formula = ~ Gender | Admit, alpha = 0.3
-  ) +
-  geom_marimekko_jitter(seed = 42, size = 0.8) +
-  labs(title = "UCB admissions, Dept A: individual applicants")
-```
-
-Set `seed` for reproducible jitter placement.
-
 ## Three-variable nested mosaic
 
 `geom_marimekko()` supports multi-variable formulas. A three-variable
@@ -156,8 +135,8 @@ The returned columns are:
 
 ## Extending with custom ggplot2 layers
 
-The companion layers `geom_marimekko_text()`, `geom_marimekko_label()`,
-and `geom_marimekko_jitter()` automatically read tile positions from a
+The companion layers `geom_marimekko_text()`, `geom_marimekko_label()`
+automatically read tile positions from a
 preceding `geom_marimekko()` layer. You only need to specify the
 `label` aesthetic:
 
@@ -198,6 +177,125 @@ ggplot(titanic) +
 Because `fortify_marimekko()` returns a plain data frame, you can use
 any ggplot2 geom -- `geom_segment()`, `geom_curve()`, `geom_tile()`,
 `ggrepel::geom_label_repel()`, etc.
+
+## Extending with `StatMarimekkoTiles`
+
+The exported `StatMarimekkoTiles` ggproto object lets you pair
+marimekko tile positions with **any** geom. While the convenience
+wrappers `geom_marimekko_text()` and `geom_marimekko_label()` cover
+the most common case (text overlays), `StatMarimekkoTiles` gives you
+full control by plugging directly into `ggplot2::layer()`.
+
+### How it works
+
+`StatMarimekkoTiles` does not compute tile positions itself — it reads
+them from a preceding `geom_marimekko()` layer via an internal shared
+environment. This means:
+
+1. A `geom_marimekko()` layer **must** appear before any layer that
+   uses `StatMarimekkoTiles`.
+2. The stat returns one row per tile with columns `xmin`, `xmax`,
+   `ymin`, `ymax`, `x`, `y` (centre), `weight`, `fill`,
+   `.proportion`, `.residuals`, and `.tooltip`.
+3. You can reference any of these columns in `aes()` via
+   `after_stat()`.
+
+### Example: bubble overlay
+
+Map point size to `weight` to show tile counts as bubbles:
+
+```{r stat-tiles-bubble}
+ggplot(titanic) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived, alpha = 0.4
+  ) +
+  layer(
+    stat = StatMarimekkoTiles,
+    geom = GeomPoint,
+    mapping = aes(size = after_stat(weight)),
+    data = titanic,
+    position = "identity",
+    show.legend = FALSE,
+    inherit.aes = FALSE,
+    params = list(colour = "white", alpha = 0.7)
+  ) +
+  scale_size_area(max_size = 12) +
+  labs(title = "Bubble overlay via StatMarimekkoTiles")
+```
+
+### Example: residual markers
+
+Colour and size encode deviation from independence:
+
+```{r stat-tiles-residuals}
+ggplot(titanic) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived
+  ) +
+  layer(
+    stat = StatMarimekkoTiles,
+    geom = GeomPoint,
+    mapping = aes(
+      size = after_stat(abs(.residuals)),
+      colour = after_stat(ifelse(.residuals > 0, "over", "under"))
+    ),
+    data = titanic,
+    position = "identity",
+    show.legend = TRUE,
+    inherit.aes = FALSE,
+    params = list(alpha = 0.8)
+  ) +
+  scale_colour_manual(
+    values = c(over = "tomato", under = "steelblue"),
+    name = "Deviation"
+  ) +
+  scale_size_continuous(range = c(1, 8), name = "|Residual|") +
+  labs(title = "Residual markers via StatMarimekkoTiles")
+```
+
+### Example: rectangle outlines
+
+Use `GeomRect` to draw highlighted borders around specific tiles
+(e.g. tiles with large residuals):
+
+```{r stat-tiles-rect}
+ggplot(titanic) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived
+  ) +
+  layer(
+    stat = StatMarimekkoTiles,
+    geom = GeomRect,
+    mapping = aes(
+      linewidth = after_stat(ifelse(abs(.residuals) > 2, 1.5, 0))
+    ),
+    data = titanic,
+    position = "identity",
+    show.legend = FALSE,
+    inherit.aes = FALSE,
+    params = list(colour = "red", fill = NA)
+  ) +
+  labs(title = "Highlight tiles with |residual| > 2")
+```
+
+### `StatMarimekkoTiles` vs `fortify_marimekko()`
+
+Both give access to the same computed tile data, but they serve
+different purposes:
+
+| | `StatMarimekkoTiles` | `fortify_marimekko()` |
+|---|---|---|
+| **When** | At render time (reactive) | Before plotting (static) |
+| **Input** | Reads from a `geom_marimekko()` layer | Standalone function call |
+| **Use case** | Adding companion layers on the same plot | Pre-processing, filtering, or using tile data outside ggplot2 |
+| **Faceting** | Automatically panel-aware | Manual panel handling |
+
+Use `StatMarimekkoTiles` when you want to add layers that stay in sync
+with `geom_marimekko()` parameters. Use `fortify_marimekko()` when you
+need to transform or subset the tile data before passing it to a geom.
 
 ## Combining layers
 
@@ -319,5 +417,4 @@ via `Imports` rather than `Depends`.
 | `gap_y` | `geom_marimekko()`, `fortify_marimekko()` | Vertical gap (overrides `gap` for y) |
 | `standardize` | `fortify_marimekko()` | Equal-width columns (spine plot) |
 | `colour` | `geom_marimekko()` | Tile border colour. Default `NULL` (matches fill) |
-| `seed` | `geom_marimekko_jitter()` | Reproducible jitter placement |
 | `show_percentages` | `geom_marimekko()` | Append marginal % to x-axis labels |

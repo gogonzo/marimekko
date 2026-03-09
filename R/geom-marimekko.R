@@ -267,7 +267,7 @@ geom_marimekko <- function(mapping = NULL, data = NULL,
     layer(
       data = data,
       mapping = mapping,
-      stat = Statmarimekko,
+      stat = StatMarimekko,
       geom = GeomRect,
       position = "identity",
       show.legend = show.legend,
@@ -434,7 +434,7 @@ geom_marimekko <- function(mapping = NULL, data = NULL,
 
 # --- Stat ---
 
-Statmarimekko <- ggproto("Statmarimekko", Stat,
+StatMarimekko <- ggproto("StatMarimekko", Stat,
   required_aes = "fill",
   default_aes = aes(weight = 1),
   optional_aes = paste0("mvar_", 1:10),
@@ -573,7 +573,7 @@ Statmarimekko <- ggproto("Statmarimekko", Stat,
       tiles[[paste0("mvar_", i)]] <- NULL
     }
 
-    # Cache tiles for companion layers (text, label, jitter)
+    # Cache tiles for companion layers (text, label, and more)
     panel_id <- if ("PANEL" %in% names(tiles)) as.character(tiles$PANEL[1]) else "1"
     if (is.null(.marimekko_env$tiles)) {
       .marimekko_env$tiles <- list()

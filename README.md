@@ -90,7 +90,6 @@ Variables in the formula can be arbitrary R expressions:
 | Core marimekko plot            | `geom_marimekko()`        |
 | Text labels on tiles           | `geom_marimekko_text()`   |
 | Labels with background box     | `geom_marimekko_label()`  |
-| Jittered points in tiles       | `geom_marimekko_jitter()` |
 | Marginal percentages on x-axis | `show_percentages = TRUE` |
 | Compute tiles without plotting | `fortify_marimekko()`     |
 | Minimal mosaic theme           | `theme_marimekko()`       |
@@ -136,20 +135,6 @@ ggplot(titanic) +
     formula = ~ Class | Survived
   ) +
   scale_alpha_continuous(range = c(0.3, 1), guide = "none")
-```
-
-### Jittered observations
-
-```r
-ucb <- as.data.frame(UCBAdmissions)
-ucb_a <- ucb[ucb$Dept == "A", ]
-
-ggplot(ucb_a) +
-  geom_marimekko(
-    aes(fill = Admit, weight = Freq),
-    formula = ~ Gender | Admit, alpha = 0.3
-  ) +
-  geom_marimekko_jitter(seed = 42)
 ```
 
 ### Three-variable nested mosaic
@@ -209,7 +194,7 @@ head(tiles)
 
 `marimekko` extends ggplot2 through the ggproto system:
 
-- **`Statmarimekko`** parses the formula, recursively partitions the
+- **`StatMarimekko`** parses the formula, recursively partitions the
   unit square, and returns tile rectangles (`xmin`, `xmax`, `ymin`,
   `ymax`) with computed variables (`.residuals`, `.proportion`, `.marginal`).
 - Tiles are rendered via **`GeomRect`** with sensible defaults

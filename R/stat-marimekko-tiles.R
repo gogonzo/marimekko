@@ -1,7 +1,88 @@
+#' Retrieve computed tile positions from a marimekko layer
+#'
+#' @name StatMarimekkoTiles
 #' @include geom-marimekko.R
-
-#' @keywords internal
-StatmarimekkoTiles <- ggproto("StatmarimekkoTiles", Stat,
+#'
+#' `StatMarimekkoTiles` is a ggplot2 [ggplot2::Stat] that exposes the
+#' tile data computed by a preceding [geom_marimekko()] layer.
+#' It can be paired with **any** geom to build custom companion layers
+#' on top of a marimekko plot.
+#'
+#' The returned data frame contains at least the following columns:
+#'
+#' \describe{
+#'   \item{`xmin`, `xmax`, `ymin`, `ymax`}{Tile boundaries.}
+#'   \item{`x`, `y`}{Tile centre (midpoint of boundaries).}
+#'   \item{`weight`}{Tile count / frequency.}
+#'   \item{`fill`}{Fill variable value for the tile.}
+#'   \item{`.proportion`}{Conditional proportion within the parent tile.}
+#'   \item{`cond_prop`}{Alias for `.proportion`.}
+#'   \item{`.residuals`}{Pearson residual measuring deviation from
+#'     independence.}
+#'   \item{`.tooltip`}{Auto-generated tooltip string with count and
+#'     percentage.}
+#' }
+#'
+#' @section Usage with custom geoms:
+#'
+#' Use `StatMarimekkoTiles` as the `stat` argument in [ggplot2::layer()]
+#' to pair the tile data with any geom. The only requirement is that
+#' [geom_marimekko()] must appear **before** the custom layer so that
+#' tile positions are computed first.
+#'
+#' @examples
+#' library(ggplot2)
+#'
+#' titanic <- as.data.frame(Titanic)
+#'
+#' # Bubble overlay — point size encodes tile count
+#' ggplot(titanic) +
+#'   geom_marimekko(
+#'     aes(fill = Survived, weight = Freq),
+#'     formula = ~ Class | Survived, alpha = 0.4
+#'   ) +
+#'   layer(
+#'     stat = StatMarimekkoTiles,
+#'     geom = GeomPoint,
+#'     mapping = aes(size = after_stat(weight)),
+#'     data = titanic,
+#'     position = "identity",
+#'     show.legend = FALSE,
+#'     inherit.aes = FALSE,
+#'     params = list(colour = "white", alpha = 0.7)
+#'   ) +
+#'   scale_size_area(max_size = 12)
+#'
+#' # Residual markers — colour and size show deviation from independence
+#' ggplot(titanic) +
+#'   geom_marimekko(
+#'     aes(fill = Survived, weight = Freq),
+#'     formula = ~ Class | Survived
+#'   ) +
+#'   layer(
+#'     stat = StatMarimekkoTiles,
+#'     geom = GeomPoint,
+#'     mapping = aes(
+#'       size = after_stat(abs(.residuals)),
+#'       colour = after_stat(ifelse(.residuals > 0, "over", "under"))
+#'     ),
+#'     data = titanic,
+#'     position = "identity",
+#'     show.legend = TRUE,
+#'     inherit.aes = FALSE,
+#'     params = list(alpha = 0.8)
+#'   ) +
+#'   scale_colour_manual(
+#'     values = c(over = "tomato", under = "steelblue"),
+#'     name = "Deviation"
+#'   ) +
+#'   scale_size_continuous(range = c(1, 8), name = "|Residual|")
+#'
+#' @seealso [geom_marimekko()], [geom_marimekko_text()],
+#'   [geom_marimekko_label()], [fortify_marimekko()]
+#'
+#' @export
+StatMarimekkoTiles <- ggproto("StatMarimekkoTiles", Stat,
   compute_panel = function(data, scales) {
     panel_id <- if ("PANEL" %in% names(data)) as.character(data$PANEL[1]) else "1"
     tiles <- .marimekko_env$tiles[[panel_id]]
@@ -74,7 +155,7 @@ geom_marimekko_text <- function(mapping = NULL, data = NULL,
   layer(
     data = data,
     mapping = mapping,
-    stat = StatmarimekkoTiles,
+    stat = StatMarimekkoTiles,
     geom = GeomText,
     position = position,
     show.legend = show.legend,
@@ -126,7 +207,7 @@ geom_marimekko_label <- function(mapping = NULL, data = NULL,
   layer(
     data = data,
     mapping = mapping,
-    stat = StatmarimekkoTiles,
+    stat = StatMarimekkoTiles,
     geom = GeomLabel,
     position = position,
     show.legend = show.legend,

@@ -573,49 +573,6 @@ describe("geom_marimekko_label", {
   })
 })
 
-describe("geom_marimekko_jitter", {
-  it("produces exactly one point per unit weight", {
-    df <- data.frame(x = c("A", "B"), fill = c("Y", "Y"), weight = c(10, 5))
-    built <- ggplot_build(
-      ggplot(df) +
-        geom_marimekko(aes(fill = fill, weight = weight), formula = ~ x | fill) +
-        geom_marimekko_jitter(seed = 1)
-    )
-    tiles <- built$data[[1]]
-    jitter <- built$data[[2]]
-    expect_equal(nrow(jitter), 15L)
-    # Each tile should contain exactly as many points as its weight
-    for (i in seq_len(nrow(tiles))) {
-      pts_inside <- jitter$x >= tiles$xmin[i] & jitter$x <= tiles$xmax[i] &
-        jitter$y >= tiles$ymin[i] & jitter$y <= tiles$ymax[i]
-      expect_equal(sum(pts_inside), tiles$weight[i])
-    }
-  })
-
-  it("produces identical output for the same seed", {
-    df <- data.frame(x = c("A", "B"), fill = c("Y", "Y"), weight = c(5, 5))
-    build_jitter <- function(s) {
-      ggplot_build(
-        ggplot(df) +
-          geom_marimekko(aes(fill = fill, weight = weight), formula = ~ x | fill) +
-          geom_marimekko_jitter(seed = s)
-      )$data[[2]]
-    }
-    d1 <- build_jitter(123)
-    d2 <- build_jitter(123)
-    expect_equal(d1$x, d2$x)
-    expect_equal(d1$y, d2$y)
-  })
-
-  it("warns without a preceding geom_marimekko layer", {
-    .marimekko_env$tiles <- NULL
-    df <- data.frame(x = c("A", "B"), fill = c("Y", "Y"), weight = c(5, 5))
-    p <- ggplot(df) +
-      geom_marimekko_jitter(seed = 1)
-    expect_warning(ggplot_build(p), "geom_marimekko")
-  })
-})
-
 describe("auto x-axis labels", {
   it("places breaks at column midpoints", {
     df <- data.frame(
@@ -789,15 +746,6 @@ describe("plotly conversion", {
       geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
       geom_marimekko_label(aes(label = after_stat(weight)))
     suppressWarnings(expect_no_error(plotly::ggplotly(p)))
-  })
-
-  it("converts geom_marimekko_jitter to plotly", {
-    skip_if_not_installed("plotly")
-    df <- data.frame(x = c("A", "B"), fill = c("Y", "Y"), weight = c(5, 5))
-    p <- ggplot(df) +
-      geom_marimekko(aes(fill = fill, weight = weight), formula = ~ x | fill) +
-      geom_marimekko_jitter(seed = 1)
-    expect_no_error(plotly::ggplotly(p))
   })
 })
 

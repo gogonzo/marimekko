@@ -49,7 +49,7 @@ fortify_marimekko <- function(data, formula,
   variable_names <- vapply(variable_specs, function(s) s$var, character(1))
   variable_dirs <- vapply(variable_specs, function(s) s$dir, character(1))
 
-  # Build data frame with mvar_ columns (same structure as Statmarimekko expects)
+  # Build data frame with mvar_ columns (same structure as StatMarimekko expects)
   df <- data.frame(PANEL = rep(1L, nrow(data)), weight = weight_values)
   for (i in seq_along(variable_specs)) {
     df[[paste0("mvar_", i)]] <- eval(variable_specs[[i]]$expr, envir = data)
@@ -60,7 +60,7 @@ fortify_marimekko <- function(data, formula,
   df$fill <- eval(last_expr, envir = data)
   df$colour <- df$fill
 
-  result <- Statmarimekko$compute_panel(
+  result <- StatMarimekko$compute_panel(
     data = df,
     scales = NULL,
     mosaic_vars = variable_names,

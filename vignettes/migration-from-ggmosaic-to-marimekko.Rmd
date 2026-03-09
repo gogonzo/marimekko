@@ -41,7 +41,6 @@ showing each ggmosaic pattern and its marimekko equivalent.
 |----------|-----------|-------|
 | `geom_mosaic()` | `geom_marimekko()` | Standard `aes()`, no `product()` |
 | `geom_mosaic_text()` | `geom_marimekko_text()` | |
-| `geom_mosaic_jitter()` | `geom_marimekko_jitter()` | Adds `seed` parameter |
 | `theme_mosaic()` | `theme_marimekko()` | |
 | `scale_x_productlist()` | *not needed* | Axis labels are automatic; use `show_percentages = TRUE` in `geom_marimekko()` |
 | `scale_y_productlist()` | *not needed* | Axis labels are automatic |
@@ -239,8 +238,7 @@ horizontal splits and alternates direction with each `|` in the formula.
 Use `coord_flip()` if you need vertical-first orientation.
 
 For equal-width columns (spine-plot style), `standardize = TRUE` is
-available in `geom_marimekko_text()`, `geom_marimekko_jitter()`, and
-`fortify_marimekko()`.
+available in `geom_marimekko_text()` and `fortify_marimekko()`.
 
 ```r
 # ggmosaic — spine plot via divider
@@ -333,32 +331,6 @@ ggplot(titanic) +
   theme_marimekko()
 ```
 
-### Jittered points
-
-The paper introduces `geom_mosaic_jitter()` as a novel contribution for
-visualizing the underlying density in mosaic tiles (Section 8):
-
-```r
-# ggmosaic — jittered points (non-reproducible across renders)
-ggplot(titanic) +
-  geom_mosaic(aes(x = product(Class), fill = Survived, weight = Freq)) +
-  geom_mosaic_jitter(aes(x = product(Class), fill = Survived, weight = Freq))
-```
-
-```{r jitter}
-# marimekko — reproducible jitter with explicit seed
-ggplot(titanic) +
-  geom_marimekko(aes(fill = Survived, weight = Freq),
-    formula = ~ Class | Survived, alpha = 0.3
-  ) +
-  geom_marimekko_jitter(seed = 42, size = 0.5) +
-  theme_marimekko() +
-  labs(title = "Jittered points reveal underlying density")
-```
-
-`geom_marimekko_jitter()` takes a `seed` parameter for reproducible jitter,
-fixing the ggmosaic issue where jittered points changed on every render.
-
 ### HairEyeColor — a larger example
 
 The paper uses multi-variable examples to show how mosaic plots reveal
@@ -419,12 +391,7 @@ ggmosaic set `inherit.aes = FALSE` by default, requiring you to repeat
 aesthetics in every layer. marimekko follows ggplot2 convention —
 `inherit.aes = TRUE` — so aesthetics set in `ggplot(aes(...))` are inherited.
 
-### 5. Jitter requires explicit seed
-
-`geom_marimekko_jitter()` takes a `seed` parameter for reproducible jitter. This
-avoids the ggmosaic issue where jittered points changed on every render.
-
-### 6. Text labels need explicit `label` aesthetic
+### 5. Text labels need explicit `label` aesthetic
 
 `geom_marimekko_text()` requires `label = after_stat(weight)` or similar.
 ggmosaic's `geom_mosaic_text()` auto-generated labels.
@@ -446,7 +413,7 @@ ggplotly(p)
 ```
 
 This also works with `geom_marimekko_text()`,
-`geom_marimekko_label()`, and `geom_marimekko_jitter()`.
+`geom_marimekko_label()`
 
 ## Search-and-replace checklist
 
@@ -455,7 +422,6 @@ For a quick mechanical migration, apply these replacements:
 ```
 geom_mosaic(          →  geom_marimekko(
 geom_mosaic_text(     →  geom_marimekko_text(
-geom_mosaic_jitter(   →  geom_marimekko_jitter(
 theme_mosaic(         →  theme_marimekko(
 library(ggmosaic)     →  library(marimekko)
 ```

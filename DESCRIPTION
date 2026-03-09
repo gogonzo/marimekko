@@ -29,6 +29,5 @@ Collate:
     'marimekko-package.R'
     'geom-marimekko.R'
     'fortify-marimekko.R'
-    'geom-marimekko-text.R'
-    'geom-marimekko-jitter.R'
+    'stat-marimekko-tiles.R'
     'theme-marimekko.R'

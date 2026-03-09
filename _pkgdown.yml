@@ -44,7 +44,7 @@ reference:
       - geom_marimekko
       - geom_marimekko_text
       - geom_marimekko_label
-      - geom_marimekko_jitter
+      - StatMarimekkoTiles
 
   - title: "Utilities"
     desc: >

@@ -186,5 +186,5 @@ ggplot(as.data.frame(Titanic)) +
 ## Next steps
 
 See `vignette("advanced-features")` for spine plots, Pearson residuals,
-jittered points, three-variable mosaics, and programmatic data extraction
+three-variable mosaics, and programmatic data extraction
 with `fortify_marimekko()`.

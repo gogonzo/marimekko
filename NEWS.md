@@ -11,8 +11,6 @@
 * `geom_marimekko_text()` and `geom_marimekko_label()` — place text or
   label annotations at tile centres, with access to computed variables via
  `after_stat()`.
-* `geom_marimekko_jitter()` — scatter jittered points within each tile,
-  scaled to cell counts.
 * `fortify_marimekko()` — extract tile rectangles as a data frame without
   plotting.
 * `theme_marimekko()` — a minimal theme designed for mosaic plots.
