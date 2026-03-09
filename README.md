@@ -207,15 +207,10 @@ head(tiles)
 
 - **Minimal dependencies** -- `ggplot2` as only dependency
 - **No internal ggplot2 API usage** -- won't break on ggplot2 updates
+- **Easily extendable** -- `StatMarimekkoTiles` exposes tile data so you can pair it with any ggplot2 geom to build custom companion layers (bubbles, residual markers, etc.)
 - **Formula-based API** -- `~ a | b | c` encodes both variables and directions
 - **Works without `library()`** -- `marimekko::geom_marimekko()` just works
-- **No tidyr dependency** -- no deprecation warnings
 - **Respects factor levels** -- user-set `levels()` are honored
 - **In-formula expressions** -- `~ factor(cyl) | cut(mpg, breaks = 3)` works
 - **Plotly compatible** -- `ggplotly()` works out of the box
-- **Independent x/y gaps** -- different spacing for columns vs segments
 
-## Dependencies
-
-- `ggplot2` (>= 3.5.0)
-- Base R only for internals (no dplyr/tidyr)
