@@ -4,12 +4,12 @@
 \name{marimekko-package}
 \alias{marimekko}
 \alias{marimekko-package}
-\title{marimekko: marimekko and Mosaic Plots for 'ggplot2'}
+\title{marimekko: Marimekko Plots for 'ggplot2'}
 \description{
-Create marimekko (mosaic) plots as a 'ggplot2' layer. Column widths encode marginal proportions of one categorical variable and segment heights encode conditional proportions of a second categorical variable.
+Create marimekko (mosaic) plots as a 'ggplot2' layer. Column widths encode marginal proportions of one categorical variable and segment heights encode conditional proportions of a second categorical variable. Based on the mosaic display method by Hartigan and Kleiner (1981) \doi{10.1007/978-1-4613-9464-8_37}.
 }
 \author{
-\strong{Maintainer}: Dawid Kaledkowski \email{dawid.kaledkowski@gmail.com}
+\strong{Maintainer}: Dawid Kałędkowski \email{dawid.kaledkowski@gmail.com} (ORCID: <https://orcid.org/0000-0001-9533-457X>)
 
 }
 \keyword{internal}

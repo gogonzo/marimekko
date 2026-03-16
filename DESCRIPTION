@@ -8,7 +8,8 @@ Authors@R: person("Dawid", "Kałędkowski", ,
 Description: Create marimekko (mosaic) plots as a 'ggplot2' layer.
     Column widths encode marginal proportions of one categorical variable
     and segment heights encode conditional proportions of a second
-    categorical variable.
+    categorical variable. Based on the mosaic display method by
+    Hartigan and Kleiner (1981) <doi:10.1007/978-1-4613-9464-8_37>.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
