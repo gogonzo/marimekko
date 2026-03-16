@@ -30,12 +30,7 @@ basics shown in `vignette("getting-started")`.
 
 ```{r basic}
 ggplot(titanic) +
-  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
-  scale_x_marimekko() +
-  labs(
-    title = "Marimekko plot",
-    y = "Proportion"
-  )
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived)
 ```
 
 ## Pearson residuals
@@ -45,7 +40,7 @@ independence assumption. Positive residuals indicate more observations
 than expected; negative residuals indicate fewer.
 
 Residuals are automatically computed and exposed as the
-`.resid` computed variable, which you can map to an aesthetic via
+`.residuals` computed variable, which you can map to an aesthetic via
 `after_stat()`:
 
 ```{r residuals}
@@ -53,11 +48,10 @@ ggplot(titanic) +
   geom_marimekko(
     aes(
       fill = Survived, weight = Freq,
-      alpha = after_stat(abs(.resid))
+      alpha = after_stat(abs(.residuals))
     ),
     formula = ~ Class | Survived
   ) +
-  scale_x_marimekko() +
   scale_alpha_continuous(range = c(0.3, 1), guide = "none") +
   labs(title = "Residual shading: stronger opacity = larger deviation")
 ```
@@ -70,65 +64,10 @@ ggplot(titanic) +
     formula = ~ Class | Survived
   ) +
   geom_marimekko_text(aes(
-    x = Class, fill = Survived, weight = Freq,
-    label = after_stat(round(.resid, 1))
-  ), residuals = TRUE, colour = "white", size = 3) +
-  scale_x_marimekko() +
+    label = after_stat(round(.residuals, 1))
+  ), colour = "white", size = 3) +
   labs(title = "Pearson residuals as labels")
 ```
-
-## Chi-squared test annotation
-
-`annotate_chisq()` runs a chi-squared test of independence and places
-the result (test statistic, degrees of freedom, p-value) as a text
-annotation:
-
-```{r chisq}
-ggplot(titanic) +
-  geom_marimekko(aes(fill = Survived, weight = Freq),
-    formula = ~ Class | Survived
-  ) +
-  scale_x_marimekko() +
-  annotate_chisq(titanic, Class, Survived, weight = Freq) +
-  labs(title = "Mosaic plot with chi-squared test")
-```
-
-Customize the annotation position and appearance:
-
-```{r chisq-custom}
-ggplot(titanic) +
-  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
-  scale_x_marimekko() +
-  annotate_chisq(titanic, Class, Survived,
-    weight = Freq,
-    pos_x = 0.5, pos_y = 0.95, hjust = 0.5,
-    size = 4, fontface = "italic"
-  )
-```
-
-## Jittered points
-
-For small-to-medium datasets, `geom_marimekko_jitter()` scatters
-individual data points inside their corresponding mosaic tile. Each
-row is expanded by its weight, so weighted data shows the correct
-number of points.
-
-```{r jitter}
-ucb <- as.data.frame(UCBAdmissions)
-ucb_a <- ucb[ucb$Dept == "A", ]
-
-ggplot(ucb_a) +
-  geom_marimekko(aes(fill = Admit, weight = Freq),
-    formula = ~ Gender | Admit, alpha = 0.3
-  ) +
-  geom_marimekko_jitter(aes(x = Gender, fill = Admit, weight = Freq),
-    seed = 42, size = 0.8
-  ) +
-  scale_x_marimekko() +
-  labs(title = "UCB admissions, Dept A: individual applicants")
-```
-
-Set `seed` for reproducible jitter placement.
 
 ## Three-variable nested mosaic
 
@@ -145,7 +84,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived | Sex
   ) +
-  scale_x_marimekko() +
   labs(title = "Nested mosaic: Class > Sex > Survived")
 ```
 
@@ -153,79 +91,211 @@ This produces a richer view than faceting because all three variables
 share a single coordinate space, making relative proportions directly
 comparable.
 
-## Y-axis scale
+## Y-axis labels
 
-By default the y-axis shows proportions from 0 to 1.
-`scale_y_marimekko()` replaces that with fill category labels at
-segment midpoints:
-
-```{r y-scale}
-ggplot(titanic) +
-  geom_marimekko(aes(fill = Survived, weight = Freq),
-    formula = ~ Class | Survived
-  ) +
-  scale_x_marimekko() +
-  scale_y_marimekko() +
-  labs(title = "Fill labels on y-axis")
-```
-
-This is most useful when you want to de-emphasize the numeric
-proportions and instead label segments directly.
+By default `geom_marimekko()` automatically labels both axes with
+category names. The y-axis shows proportions from 0 to 1, while the
+x-axis displays category labels at each column's midpoint.
 
 ## Data extraction with fortify
 
 `fortify_marimekko()` returns computed tile positions as a plain data
-frame without creating a plot. This is useful for:
-
-- Custom downstream analysis
-- Manual ggplot2 layer construction
-- Exporting tile coordinates
+frame without creating a plot. It accepts the same formula syntax as
+`geom_marimekko()`:
 
 ```{r fortify}
-tiles <- fortify_marimekko(titanic, Class, Survived, weight = Freq)
+tiles <- fortify_marimekko(titanic,
+  formula = ~ Class | Survived, weight = Freq
+)
 head(tiles)
 ```
 
-With residuals:
+Multi-variable formulas work too:
 
-```{r fortify-resid}
-tiles_resid <- fortify_marimekko(titanic, Class, Survived,
-  weight = Freq, residuals = TRUE
+```{r fortify-3var}
+tiles_3 <- fortify_marimekko(titanic,
+  formula = ~ Class | Survived | Sex, weight = Freq
 )
-head(tiles_resid)
+head(tiles_3)
 ```
 
 The returned columns are:
 
 | Column | Description |
 |--------|-------------|
-| `x_label` | Category name for the x variable |
-| `fill_label` | Category name for the fill variable |
+| Formula variables | One column per formula variable (e.g. `Class`, `Survived`) |
+| `fill` | The fill variable value |
 | `xmin`, `xmax` | Horizontal extent of the tile |
 | `ymin`, `ymax` | Vertical extent of the tile |
 | `x`, `y` | Tile center coordinates |
 | `weight` | Aggregated count |
-| `cond_prop` | Conditional proportion within the column |
-| `.resid` | Pearson residual (when `residuals = TRUE`) |
+| `.proportion` | Conditional proportion within the parent tile |
+| `.marginal` | Proportion of the grand total |
+| `.residuals` | Pearson residual |
 
-You can use the fortified data frame to build completely custom plots:
+## Extending with custom ggplot2 layers
+
+The companion layers `geom_marimekko_text()`, `geom_marimekko_label()`
+automatically read tile positions from a
+preceding `geom_marimekko()` layer. You only need to specify the
+`label` aesthetic:
+
+```{r companion-layers}
+ggplot(titanic) +
+  geom_marimekko(aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived
+  ) +
+  geom_marimekko_text(aes(
+    label = after_stat(paste(Class, Survived, weight, sep = "\n"))
+  ), colour = "white", size = 2.5)
+```
+
+For more control, use `fortify_marimekko()` to pre-compute tiles and
+pass them as `data` to any standard ggplot2 geom. This lets you
+summarize, filter, or transform the tile data before plotting:
 
 ```{r fortify-custom}
-tiles <- fortify_marimekko(titanic, Class, Survived, weight = Freq)
+tiles <- fortify_marimekko(titanic,
+  formula = ~ Class | Survived, weight = Freq
+)
 
-ggplot(tiles) +
-  geom_rect(
-    aes(
-      xmin = xmin, xmax = xmax,
-      ymin = ymin, ymax = ymax,
-      fill = fill_label
-    ),
-    colour = "grey30", linewidth = 0.3
+# Highlight cells with significant residuals
+tiles$significant <- abs(tiles$.residuals) > 2
+
+ggplot(titanic) +
+  geom_marimekko(aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived
   ) +
-  geom_text(aes(x = x, y = y, label = weight), size = 3) +
-  theme_minimal() +
-  labs(fill = "Survived")
+  geom_label(
+    data = tiles[tiles$significant, ],
+    aes(x = x, y = y, label = paste0("r=", round(.residuals, 1))),
+    fill = "yellow", size = 3, fontface = "bold"
+  ) +
+  labs(title = "Significant deviations from independence (|r| > 2)")
 ```
+
+Because `fortify_marimekko()` returns a plain data frame, you can use
+any ggplot2 geom -- `geom_segment()`, `geom_curve()`, `geom_tile()`,
+`ggrepel::geom_label_repel()`, etc.
+
+## Extending with `StatMarimekkoTiles`
+
+The exported `StatMarimekkoTiles` ggproto object lets you pair
+marimekko tile positions with **any** geom. While the convenience
+wrappers `geom_marimekko_text()` and `geom_marimekko_label()` cover
+the most common case (text overlays), `StatMarimekkoTiles` gives you
+full control by plugging directly into `ggplot2::layer()`.
+
+### How it works
+
+`StatMarimekkoTiles` does not compute tile positions itself — it reads
+them from a preceding `geom_marimekko()` layer via an internal shared
+environment. This means:
+
+1. A `geom_marimekko()` layer **must** appear before any layer that
+   uses `StatMarimekkoTiles`.
+2. The stat returns one row per tile with columns `xmin`, `xmax`,
+   `ymin`, `ymax`, `x`, `y` (centre), `weight`, `fill`,
+   `.proportion`, `.residuals`, and `.tooltip`.
+3. You can reference any of these columns in `aes()` via
+   `after_stat()`.
+
+### Example: bubble overlay
+
+Map point size to `weight` to show tile counts as bubbles:
+
+```{r stat-tiles-bubble}
+ggplot(titanic) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived, alpha = 0.4
+  ) +
+  layer(
+    stat = StatMarimekkoTiles,
+    geom = GeomPoint,
+    mapping = aes(size = after_stat(weight)),
+    data = titanic,
+    position = "identity",
+    show.legend = FALSE,
+    inherit.aes = FALSE,
+    params = list(colour = "white", alpha = 0.7)
+  ) +
+  scale_size_area(max_size = 12) +
+  labs(title = "Bubble overlay via StatMarimekkoTiles")
+```
+
+### Example: residual markers
+
+Colour and size encode deviation from independence:
+
+```{r stat-tiles-residuals}
+ggplot(titanic) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived
+  ) +
+  layer(
+    stat = StatMarimekkoTiles,
+    geom = GeomPoint,
+    mapping = aes(
+      size = after_stat(abs(.residuals)),
+      colour = after_stat(ifelse(.residuals > 0, "over", "under"))
+    ),
+    data = titanic,
+    position = "identity",
+    show.legend = TRUE,
+    inherit.aes = FALSE,
+    params = list(alpha = 0.8)
+  ) +
+  scale_colour_manual(
+    values = c(over = "tomato", under = "steelblue"),
+    name = "Deviation"
+  ) +
+  scale_size_continuous(range = c(1, 8), name = "|Residual|") +
+  labs(title = "Residual markers via StatMarimekkoTiles")
+```
+
+### Example: rectangle outlines
+
+Use `GeomRect` to draw highlighted borders around specific tiles
+(e.g. tiles with large residuals):
+
+```{r stat-tiles-rect}
+ggplot(titanic) +
+  geom_marimekko(
+    aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived
+  ) +
+  layer(
+    stat = StatMarimekkoTiles,
+    geom = GeomRect,
+    mapping = aes(
+      linewidth = after_stat(ifelse(abs(.residuals) > 2, 1.5, 0))
+    ),
+    data = titanic,
+    position = "identity",
+    show.legend = FALSE,
+    inherit.aes = FALSE,
+    params = list(colour = "red", fill = NA)
+  ) +
+  labs(title = "Highlight tiles with |residual| > 2")
+```
+
+### `StatMarimekkoTiles` vs `fortify_marimekko()`
+
+Both give access to the same computed tile data, but they serve
+different purposes:
+
+| | `StatMarimekkoTiles` | `fortify_marimekko()` |
+|---|---|---|
+| **When** | At render time (reactive) | Before plotting (static) |
+| **Input** | Reads from a `geom_marimekko()` layer | Standalone function call |
+| **Use case** | Adding companion layers on the same plot | Pre-processing, filtering, or using tile data outside ggplot2 |
+| **Faceting** | Automatically panel-aware | Manual panel handling |
+
+Use `StatMarimekkoTiles` when you want to add layers that stay in sync
+with `geom_marimekko()` parameters. Use `fortify_marimekko()` when you
+need to transform or subset the tile data before passing it to a geom.
 
 ## Combining layers
 
@@ -237,22 +307,19 @@ ggplot(titanic) +
   geom_marimekko(
     aes(
       fill = Survived, weight = Freq,
-      alpha = after_stat(abs(.resid))
+      alpha = after_stat(abs(.residuals))
     ),
-    formula = ~ Class | Survived
+    formula = ~ Class | Survived,
+    show_percentages = TRUE
   ) +
-  geom_marimekko_text(aes(
-    x = Class, fill = Survived, weight = Freq,
-    label = after_stat(weight)
-  ), colour = "white", size = 3.5) +
-  scale_x_marimekko(show_percentages = TRUE) +
+  geom_marimekko_text(aes(label = after_stat(weight)),
+    colour = "white", size = 3.5
+  ) +
   scale_alpha_continuous(range = c(0.4, 1), guide = "none") +
-  annotate_chisq(titanic, Class, Survived, weight = Freq) +
   theme_marimekko() +
   labs(
     title = "Full-featured mosaic plot",
-    subtitle = "Residual shading + counts + marginal % + chi-squared test",
-    y = "Proportion"
+    subtitle = "Residual shading + counts + marginal %"
   )
 ```
 
@@ -267,7 +334,6 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived, gap_x = 0.04, gap_y = 0
   ) +
-  scale_x_marimekko() +
   labs(title = "Wide column gaps, no vertical gaps")
 ```
 
@@ -276,8 +342,33 @@ ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived, gap_x = 0, gap_y = 0.03
   ) +
-  scale_x_marimekko() +
   labs(title = "No column gaps, visible vertical gaps")
+```
+
+## Colour palette
+
+`marimekko` ships with an Marimekko inspired color pallette. Use `theme_marimekko()` oe use 
+`scale_fill_manual(palette = marimekko_pal)`:
+
+```{r palette}
+ggplot(titanic) +
+  geom_marimekko(aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived
+  ) +
+  theme_marimekko() +
+  labs(title = "Earthy Nordic palette")
+```
+
+By default, tile borders match the fill colour (borders blend in).
+Set `colour` explicitly to restore visible borders:
+
+```{r colour-override}
+ggplot(titanic) +
+  geom_marimekko(aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived, colour = "white"
+  ) +
+  theme_marimekko() +
+  labs(title = "White borders with marimekko palette")
 ```
 
 ## Plotly interactivity
@@ -290,8 +381,7 @@ library(plotly)
 p <- ggplot(titanic) +
   geom_marimekko(aes(fill = Survived, weight = Freq),
     formula = ~ Class | Survived
-  ) +
-  scale_x_marimekko()
+  )
 ggplotly(p)
 ```
 
@@ -304,9 +394,8 @@ expressions — both in formulas and inside `aes()`:
 # Expressions work in formulas
 ggplot(mtcars) +
   geom_marimekko(formula = ~ factor(cyl) | factor(gear)) +
-  scale_x_marimekko() +
   labs(
-    x = "Cylinders", fill = "Gears",
+    y = "Gears", fill = "Gears",
     title = "factor() inside formula works"
   )
 ```
@@ -322,11 +411,10 @@ via `Imports` rather than `Depends`.
 
 | Parameter | Used in | Description |
 |-----------|---------|-------------|
-| `formula` | `geom_marimekko()` | Formula specifying variable hierarchy (`~ a \| b \| c`) |
-| `gap` | `geom_marimekko()`, `geom_marimekko_text()`, `geom_marimekko_label()`, `geom_marimekko_jitter()`, `fortify_marimekko()` | Spacing between tiles (fraction of plot area) |
-| `gap_x` | All geom/stat/fortify functions | Horizontal gap (overrides `gap` for x) |
-| `gap_y` | All geom/stat/fortify functions | Vertical gap (overrides `gap` for y) |
-| `standardize` | `geom_marimekko_text()`, `geom_marimekko_label()`, `geom_marimekko_jitter()`, `fortify_marimekko()` | Equal-width columns (spine plot) |
-| `residuals` | `geom_marimekko_text()`, `geom_marimekko_label()`, `fortify_marimekko()` | Compute Pearson residuals |
-| `seed` | `geom_marimekko_jitter()` | Reproducible jitter placement |
-| `show_percentages` | `scale_x_marimekko()` | Append marginal % to x-axis labels |
+| `formula` | `geom_marimekko()`, `fortify_marimekko()` | Formula specifying variable hierarchy (`~ a \| b \| c`) |
+| `gap` | `geom_marimekko()`, `fortify_marimekko()` | Spacing between tiles (fraction of plot area) |
+| `gap_x` | `geom_marimekko()`, `fortify_marimekko()` | Horizontal gap (overrides `gap` for x) |
+| `gap_y` | `geom_marimekko()`, `fortify_marimekko()` | Vertical gap (overrides `gap` for y) |
+| `standardize` | `fortify_marimekko()` | Equal-width columns (spine plot) |
+| `colour` | `geom_marimekko()` | Tile border colour. Default `NULL` (matches fill) |
+| `show_percentages` | `geom_marimekko()` | Append marginal % to x-axis labels |

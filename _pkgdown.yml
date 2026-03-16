@@ -10,10 +10,13 @@ template:
 
 home:
   title: "marimekko: marimekko and Mosaic Plots for ggplot2"
+  logo:
+    src: man/figures/logo.svg
+    alt: "marimekko logo"
   description: >
     Create marimekko (mosaic) plots as native ggplot2 layers.
     Column widths encode marginal proportions and segment heights encode
-    conditional proportions. A simpler alternative to ggmosaic.
+    conditional proportions.
 
 navbar:
   structure:
@@ -41,36 +44,15 @@ reference:
       - geom_marimekko
       - geom_marimekko_text
       - geom_marimekko_label
-      - geom_marimekko_jitter
-      - geom_marimekko_multi
-
-  - title: "Scales"
-    desc: >
-      Custom scales that label axes with category names.
-    contents:
-      - scale_x_marimekko
-      - scale_y_marimekko
-
-  - title: "Annotations"
-    desc: >
-      Annotations for statistical tests.
-    contents:
-      - annotate_chisq
+      - StatMarimekkoTiles
 
   - title: "Utilities"
     desc: >
       Helper functions for data extraction and theming.
     contents:
       - fortify_marimekko
+      - marimekko_pal
       - theme_marimekko
-
-  - title: "ggproto objects"
-    desc: >
-      Underlying ggproto classes for advanced customization.
-    contents:
-      - Statmarimekko
-      - StatmarimekkoJitter
-      - StatmarimekkoMulti
 
 articles:
   - title: "Tutorials"

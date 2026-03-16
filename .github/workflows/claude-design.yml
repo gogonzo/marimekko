@@ -1,7 +1,9 @@
 name: Claude Design Review
 on:
   issues:
-    types: [opened, labeled]
+    types: [opened]
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: read
@@ -10,20 +12,15 @@ permissions:
 
 jobs:
   design:
-    if: contains(github.event.issue.labels.*.name, 'claude-design')
+    if: >
+      (github.event_name == 'issues') ||
+      (github.event_name == 'issue_comment' && !github.event.comment.performed_via_github_app)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: anthropics/claude-code-action@v1
         with:
           anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude_args: |
-            --allowedTools "Bash(gh issue comment *),Bash(gh issue edit *),Bash(gh issue label *),Read,Glob,Grep"
-            --max-turns 20
-          prompt: |
-            /design
-
-            Post your analysis as a comment on issue #${{ github.event.issue.number }}.
-
-            Issue title: ${{ github.event.issue.title }}
-            Issue body: ${{ github.event.issue.body }}
+          claude_code_config_file: ".claude/design.md"
+          trigger_phrase: ""
+          timeout_minutes: 5

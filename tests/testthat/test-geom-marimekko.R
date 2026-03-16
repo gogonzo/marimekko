@@ -31,7 +31,7 @@ describe("geom_marimekko", {
         fill = rep(c("Y", "N"), 2),
         weight = c(50, 50, 50, 50)
       )
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight), gap = 0)
+      d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill, gap = 0)
       cols <- column_geom(d)
 
       expect_equal(cols$xmin, c(0, 0.5))
@@ -44,7 +44,7 @@ describe("geom_marimekko", {
 
     it("computes exact widths proportional to weight (3:1 -> 0.75 and 0.25)", {
       df <- data.frame(x = c("A", "B"), fill = c("Y", "Y"), weight = c(3, 1))
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight), gap = 0)
+      d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill, gap = 0)
       cols <- column_geom(d)
 
       expect_equal(cols$xmin, c(0, 0.75))
@@ -55,7 +55,7 @@ describe("geom_marimekko", {
     it("computes exact vertical split for 75/25 weights within a column", {
       # Single column, fills N(25) and Y(75). Factor order: N first.
       df <- data.frame(x = c("A", "A"), fill = c("Y", "N"), weight = c(75, 25))
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight), gap = 0)
+      d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill, gap = 0)
       d <- d[order(d$ymin), ]
 
       expect_equal(nrow(d), 2L)
@@ -71,7 +71,7 @@ describe("geom_marimekko", {
         fill = rep(c("Y", "N"), 2),
         weight = c(30, 70, 50, 50)
       )
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight), gap = 0)
+      d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill, gap = 0)
 
       seg_a <- column_segments(d, 0)
       expect_equal(seg_a$ymin, c(0, 0.7))
@@ -83,7 +83,7 @@ describe("geom_marimekko", {
     })
 
     it("places tile center x,y at midpoints of xmin/xmax and ymin/ymax", {
-      d <- build_marimekko(titanic_df, aes(x = Class, fill = Survived, weight = Freq))
+      d <- build_marimekko(titanic_df, aes(fill = Survived, weight = Freq), formula = ~ Class | Survived)
       expect_equal(d$x, (d$xmin + d$xmax) / 2)
       expect_equal(d$y, (d$ymin + d$ymax) / 2)
     })
@@ -91,19 +91,20 @@ describe("geom_marimekko", {
     it("produces correct tile count for 3x3 table", {
       df <- expand.grid(x = c("A", "B", "C"), fill = c("X", "Y", "Z"))
       df$weight <- 1:9
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight))
+      d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill)
       expect_equal(nrow(d), 9L)
     })
 
     it("keeps all tiles within [0,1] x [0,1]", {
-      d <- build_marimekko(titanic_df, aes(x = Class, fill = Survived, weight = Freq))
+      d <- build_marimekko(titanic_df, aes(fill = Survived, weight = Freq), formula = ~ Class | Survived)
       expect_true(all(d$xmin >= 0 & d$xmax <= 1))
       expect_true(all(d$ymin >= 0 & d$ymax <= 1))
     })
 
     it("tiles each column to exactly ymax=1 when gap=0", {
       d <- build_marimekko(
-        titanic_df, aes(x = Class, fill = Survived, weight = Freq),
+        titanic_df, aes(fill = Survived, weight = Freq),
+        formula = ~ Class | Survived,
         gap = 0
       )
       max_y <- tapply(d$ymax, d$xmin, max)
@@ -118,7 +119,7 @@ describe("geom_marimekko", {
         fill = rep(c("Y", "N"), 2),
         weight = c(50, 50, 50, 50)
       )
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight), gap = 0)
+      d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill, gap = 0)
       cols <- column_geom(d)
       expect_equal(cols$xmax[1], cols$xmin[2])
     })
@@ -131,7 +132,7 @@ describe("geom_marimekko", {
         fill = rep(c("Y", "N"), 2),
         weight = c(50, 50, 50, 50)
       )
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight), gap = 0.1)
+      d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill, gap = 0.1)
       cols <- column_geom(d)
       expect_equal(cols$xmin[2] - cols$xmax[1], 0.1)
       expect_equal(cols$width, c(0.45, 0.45))
@@ -143,7 +144,7 @@ describe("geom_marimekko", {
         fill = c("Y", "N"),
         weight = c(50, 50)
       )
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight), gap = 0.1)
+      d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill, gap = 0.1)
       d <- d[order(d$ymin), ]
       # usable_height=0.9, each segment=0.45
       expect_equal(d$ymin[2] - d$ymax[1], 0.1)
@@ -158,7 +159,8 @@ describe("geom_marimekko", {
         fill = rep(c("Y", "N"), 2),
         weight = c(50, 50, 50, 50)
       )
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight),
+      d <- build_marimekko(df, aes(fill = fill, weight = weight),
+        formula = ~ x | fill,
         gap_x = 0.05, gap_y = 0
       )
       cols <- column_geom(d)
@@ -174,7 +176,8 @@ describe("geom_marimekko", {
         fill = rep(c("Y", "N"), 2),
         weight = c(50, 50, 50, 50)
       )
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight),
+      d <- build_marimekko(df, aes(fill = fill, weight = weight),
+        formula = ~ x | fill,
         gap_x = 0, gap_y = 0.08
       )
       cols <- column_geom(d)
@@ -190,7 +193,8 @@ describe("geom_marimekko", {
         fill = rep(c("Y", "N"), 2),
         weight = c(50, 50, 50, 50)
       )
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight),
+      d <- build_marimekko(df, aes(fill = fill, weight = weight),
+        formula = ~ x | fill,
         gap = 0.1, gap_x = 0.02, gap_y = 0.04
       )
       cols <- column_geom(d)
@@ -224,8 +228,7 @@ describe("geom_marimekko", {
           )
       )$data[[1]]
       # More tiles than 2-var
-      expect_gt(nrow(d), 8L)
-      expect_true(all(d$xmin >= 0 & d$xmax <= 1))
+      expect_equal(nrow(d), 16L)
     })
 
     it("formula = ~ a + b | c produces double-decker pattern", {
@@ -236,42 +239,61 @@ describe("geom_marimekko", {
             formula = ~ Class + Sex | Survived
           )
       )$data[[1]]
-      expect_gt(nrow(d), 8L)
+      expect_equal(nrow(d), 16L)
     })
 
-    it("backward-compat: aes(x=, fill=) auto-constructs formula", {
-      # Old API should still work
-      d <- build_marimekko(titanic_df, aes(x = Class, fill = Survived, weight = Freq))
-      expect_equal(nrow(d), 8L)
-    })
-
-    it("errors when neither formula nor x aesthetic is provided", {
+    it("errors when formula is not provided", {
       expect_error(
         geom_marimekko(aes(fill = Survived, weight = Freq)),
         "formula.*required"
+      )
+    })
+
+    it("errors if formula is not a formula object", {
+      expect_error(
+        ggplot(titanic_df) +
+          geom_marimekko(aes(weight = Freq), formula = "~ Class | Survived"),
+        "must be a formula"
+      )
+    })
+
+    it("errors if formula is two-sided", {
+      expect_error(
+        ggplot(titanic_df) +
+          geom_marimekko(aes(weight = Freq), formula = Class ~ Survived),
+        "one-sided"
+      )
+    })
+
+    it("errors if formula has no variables", {
+      expect_error(
+        ggplot(titanic_df) +
+          geom_marimekko(aes(weight = Freq), formula = ~1),
+        "at least one variable"
       )
     })
   })
 
   describe("computed variables", {
     it("weight matches aggregated input values", {
-      d <- build_marimekko(titanic_df, aes(x = Class, fill = Survived, weight = Freq))
+      d <- build_marimekko(titanic_df, aes(fill = Survived, weight = Freq), formula = ~ Class | Survived)
       # Total weight should equal sum of all Freq
       expect_equal(sum(d$weight), sum(titanic_df$Freq))
     })
   })
 
   describe("default aesthetics", {
-    it("produces white borders and alpha=0.9 by default", {
+    it("returns NA colour and alpha=0.9 when no colour or alpha is specified", {
       df <- data.frame(x = c("A", "B"), fill = c("Y", "Y"), weight = c(1, 1))
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight))
-      expect_true(all(d$colour == "white"))
+      d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill)
+      expect_true(all(is.na(d$colour)))
       expect_true(all(d$alpha == 0.9))
     })
 
-    it("respects custom colour and alpha", {
+    it("returns colour='red' and alpha=0.5 when colour='red' and alpha=0.5 are specified", {
       df <- data.frame(x = c("A", "B"), fill = c("Y", "Y"), weight = c(1, 1))
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight),
+      d <- build_marimekko(df, aes(fill = fill, weight = weight),
+        formula = ~ x | fill,
         colour = "red", alpha = 0.5
       )
       expect_true(all(d$colour == "red"))
@@ -286,7 +308,7 @@ describe("geom_marimekko", {
         x = factor(c("B", "B", "B", "A"), levels = c("B", "A")),
         fill = c("Y", "Y", "Y", "Y")
       )
-      d <- build_marimekko(df, aes(x = x, fill = fill), gap = 0)
+      d <- build_marimekko(df, aes(fill = fill), formula = ~ x | fill, gap = 0)
       d <- d[order(d$xmin), ]
       # B has 3/4 weight, A has 1/4
       expect_equal(d$xmax[1] - d$xmin[1], 0.75)
@@ -298,14 +320,14 @@ describe("geom_marimekko", {
   describe("edge cases", {
     it("single x category spans full width", {
       df <- data.frame(x = c("A", "A"), fill = c("Y", "N"), weight = c(60, 40))
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight), gap = 0)
+      d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill, gap = 0)
       expect_equal(min(d$xmin), 0)
       expect_equal(max(d$xmax), 1)
     })
 
     it("single fill category fills full height with ymin=0 and ymax=1", {
       df <- data.frame(x = c("A", "B", "C"), fill = c("Y", "Y", "Y"), weight = 1:3)
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight), gap = 0)
+      d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill, gap = 0)
       expect_true(all(d$ymin == 0))
       expect_true(all(d$ymax == 1))
     })
@@ -316,7 +338,7 @@ describe("geom_marimekko", {
         fill = c("Y", "N", "Y"),
         weight = c(10, 0, 5)
       )
-      d <- build_marimekko(df, aes(x = x, fill = fill, weight = weight))
+      d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill)
       expect_equal(nrow(d), 2L)
       expect_true(all(d$weight > 0))
     })
@@ -327,7 +349,7 @@ describe("geom_marimekko", {
         x = sample(c("A", "B", "C"), 100, replace = TRUE),
         fill = sample(c("Y", "N"), 100, replace = TRUE)
       )
-      d <- build_marimekko(df, aes(x = x, fill = fill))
+      d <- build_marimekko(df, aes(fill = fill), formula = ~ x | fill)
       # 3 x-levels * 2 fill-levels = 6
       expect_equal(nrow(d), 6L)
     })
@@ -398,27 +420,13 @@ describe("geom_marimekko", {
       # fill should be set (auto-defaulted to factor(gear))
       expect_true("fill" %in% names(d))
     })
-
-    it("backward-compat with factor() in aes matches formula result", {
-      d_aes <- ggplot_build(
-        ggplot(mtcars) +
-          geom_marimekko(aes(x = factor(cyl), fill = factor(gear)))
-      )$data[[1]]
-      d_formula <- ggplot_build(
-        ggplot(mtcars) +
-          geom_marimekko(formula = ~ factor(cyl) | factor(gear))
-      )$data[[1]]
-      expect_equal(nrow(d_aes), nrow(d_formula))
-      expect_equal(sort(d_aes$xmin), sort(d_formula$xmin))
-      expect_equal(sort(d_aes$xmax), sort(d_formula$xmax))
-    })
   })
 
   describe("faceting", {
     it("facet_wrap produces correct number of independent panels", {
       d <- ggplot_build(
         ggplot(titanic_df) +
-          geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
+          geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
           facet_wrap(~Sex)
       )$data[[1]]
       expect_equal(length(unique(d$PANEL)), 2L)
@@ -430,7 +438,7 @@ describe("geom_marimekko", {
     it("faceted panels compute different column widths per panel", {
       d <- ggplot_build(
         ggplot(titanic_df) +
-          geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
+          geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
           facet_wrap(~Sex)
       )$data[[1]]
       male_widths <- sort(unique(round(
@@ -444,18 +452,18 @@ describe("geom_marimekko", {
 
     it("facet_grid renders without error", {
       p <- ggplot(titanic_df) +
-        geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
+        geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
         facet_grid(~Sex)
       expect_no_error(print(p))
     })
   })
 
   describe("ggplot2 layer composition", {
-    it("composes with scale_x_marimekko, scale_fill_manual, coord_flip, theme_marimekko", {
+    it("composes with scale_fill_manual, coord_flip, theme_marimekko", {
       base <- ggplot(titanic_df) +
-        geom_marimekko(aes(x = Class, fill = Survived, weight = Freq))
+        geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived)
 
-      expect_no_error(print(base + scale_x_marimekko() + theme_marimekko()))
+      expect_no_error(print(base + theme_marimekko()))
       expect_no_error(print(
         base + scale_fill_manual(values = c("No" = "red", "Yes" = "green"))
       ))
@@ -466,9 +474,10 @@ describe("geom_marimekko", {
   describe("namespace-qualified usage", {
     it("marimekko::geom_marimekko works with explicit namespacing", {
       p <- ggplot2::ggplot(titanic_df) +
-        marimekko::geom_marimekko(ggplot2::aes(
-          x = Class, fill = Survived, weight = Freq
-        ))
+        marimekko::geom_marimekko(
+          ggplot2::aes(fill = Survived, weight = Freq),
+          formula = ~ Class | Survived
+        )
       built <- ggplot2::ggplot_build(p)
       expect_equal(nrow(built$data[[1]]), 8L)
     })
@@ -478,11 +487,8 @@ describe("geom_marimekko", {
 describe("geom_marimekko_text", {
   it("renders text with after_stat(weight) at correct tile positions", {
     p <- ggplot(titanic_df) +
-      geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-      geom_marimekko_text(aes(
-        x = Class, fill = Survived, weight = Freq,
-        label = after_stat(weight)
-      ))
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+      geom_marimekko_text(aes(label = after_stat(weight)))
     built <- ggplot_build(p)
     # layer 1 = marimekko tiles, layer 2 = text
     tiles <- built$data[[1]]
@@ -494,9 +500,8 @@ describe("geom_marimekko_text", {
 
   it("renders with after_stat(cond_prop) without error", {
     p <- ggplot(titanic_df) +
-      geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
       geom_marimekko_text(aes(
-        x = Class, fill = Survived, weight = Freq,
         label = after_stat(paste0(round(cond_prop * 100), "%"))
       ))
     expect_no_error(print(p))
@@ -504,95 +509,71 @@ describe("geom_marimekko_text", {
 
   it("renders with after_stat(.tooltip) without error", {
     p <- ggplot(titanic_df) +
-      geom_marimekko_text(aes(
-        x = Class, fill = Survived, weight = Freq,
-        label = after_stat(.tooltip)
-      ))
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+      geom_marimekko_text(aes(label = after_stat(.tooltip)))
     expect_no_error(print(p))
   })
 
-  it("remaps x aesthetic to x_var transparently", {
-    # The x aesthetic should work seamlessly despite internal x_var remapping
+  it("defaults to white text colour", {
     p <- ggplot(titanic_df) +
-      geom_marimekko_text(aes(
-        x = Class, fill = Survived, weight = Freq,
-        label = after_stat(weight)
-      ))
-    d <- ggplot_build(p)$data[[1]]
-    expect_equal(nrow(d), 8L)
-    expect_true(all(c("x", "y", "label") %in% names(d)))
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+      geom_marimekko_text(aes(label = after_stat(weight)))
+    built <- ggplot_build(p)
+    text <- built$data[[2]]
+    expect_true(all(text$colour == "white"))
+  })
+
+  it("respects custom colour", {
+    p <- ggplot(titanic_df) +
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+      geom_marimekko_text(aes(label = after_stat(weight)), colour = "red")
+    built <- ggplot_build(p)
+    text <- built$data[[2]]
+    expect_true(all(text$colour == "red"))
+  })
+
+  it("warns without a preceding geom_marimekko layer", {
+    .marimekko_env$tiles <- NULL
+    p <- ggplot(titanic_df) +
+      geom_marimekko_text(aes(label = after_stat(weight)))
+    expect_warning(ggplot_build(p), "geom_marimekko")
   })
 })
 
 describe("geom_marimekko_label", {
-  it("renders label boxes at correct tile positions", {
+  it("renders label boxes at tile positions", {
     p <- ggplot(titanic_df) +
-      geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-      geom_marimekko_label(aes(
-        x = Class, fill = Survived, weight = Freq,
-        label = after_stat(weight)
-      ))
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+      geom_marimekko_label(aes(label = after_stat(weight)))
     built <- ggplot_build(p)
     tiles <- built$data[[1]]
     labels <- built$data[[2]]
     expect_equal(sort(labels$x), sort(tiles$x))
     expect_equal(sort(labels$y), sort(tiles$y))
   })
-})
 
-describe("geom_marimekko_jitter", {
-  it("produces exactly one point per unit weight", {
-    df <- data.frame(x = c("A", "B"), fill = c("Y", "Y"), weight = c(10, 5))
-    d <- ggplot_build(
-      ggplot(df) +
-        geom_marimekko(aes(x = x, fill = fill, weight = weight)) +
-        geom_marimekko_jitter(aes(x = x, fill = fill, weight = weight), seed = 1)
-    )$data[[2]]
-    expect_equal(nrow(d), 15L)
+  it("defaults to black text on semi-transparent white background", {
+    p <- ggplot(titanic_df) +
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+      geom_marimekko_label(aes(label = after_stat(weight)))
+    built <- ggplot_build(p)
+    labels <- built$data[[2]]
+    expect_true(all(labels$colour == "black"))
+    expect_true(all(labels$fill == alpha("white", 0.7)))
   })
 
-  it("places all points within their parent tile bounds", {
-    df <- data.frame(
-      x = rep(c("A", "B"), each = 2),
-      fill = rep(c("Y", "N"), 2),
-      weight = c(10, 10, 5, 5)
-    )
-    built <- ggplot_build(
-      ggplot(df) +
-        geom_marimekko(aes(x = x, fill = fill, weight = weight)) +
-        geom_marimekko_jitter(aes(x = x, fill = fill, weight = weight), seed = 42)
-    )
-    jitter <- built$data[[2]]
-    # All points must be within overall plot area [0,1]
-    expect_true(all(jitter$x >= 0 & jitter$x <= 1))
-    expect_true(all(jitter$y >= 0 & jitter$y <= 1))
-  })
-
-  it("produces identical output for the same seed", {
-    df <- data.frame(x = c("A", "B"), fill = c("Y", "Y"), weight = c(5, 5))
-    build_jitter <- function(s) {
-      ggplot_build(
-        ggplot(df) +
-          geom_marimekko_jitter(aes(x = x, fill = fill, weight = weight), seed = s)
-      )$data[[1]]
-    }
-    d1 <- build_jitter(123)
-    d2 <- build_jitter(123)
-    expect_equal(d1$x, d2$x)
-    expect_equal(d1$y, d2$y)
-  })
-
-  it("renders without error on UCBAdmissions data", {
-    ucb <- as.data.frame(UCBAdmissions)
-    ucb_a <- ucb[ucb$Dept == "A", ]
-    p <- ggplot(ucb_a) +
-      geom_marimekko(aes(x = Gender, fill = Admit, weight = Freq)) +
-      geom_marimekko_jitter(aes(x = Gender, fill = Admit, weight = Freq), seed = 42)
-    expect_no_error(print(p))
+  it("respects custom colour and fill", {
+    p <- ggplot(titanic_df) +
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+      geom_marimekko_label(aes(label = after_stat(weight)), colour = "red", fill = "blue")
+    built <- ggplot_build(p)
+    labels <- built$data[[2]]
+    expect_true(all(labels$colour == "red"))
+    expect_true(all(labels$fill == "blue"))
   })
 })
 
-describe("scale_x_marimekko", {
+describe("auto x-axis labels", {
   it("places breaks at column midpoints", {
     df <- data.frame(
       x = c("A", "A", "B", "B"),
@@ -600,8 +581,7 @@ describe("scale_x_marimekko", {
       weight = c(75, 25, 50, 50)
     )
     p <- ggplot(df) +
-      geom_marimekko(aes(x = x, fill = fill, weight = weight)) +
-      scale_x_marimekko()
+      geom_marimekko(aes(fill = fill, weight = weight), formula = ~ x | fill)
     d <- ggplot_build(p)$data[[1]]
     cols <- column_geom(d)
     expected_mids <- (cols$xmin + cols$xmax) / 2
@@ -616,9 +596,7 @@ describe("scale_x_marimekko", {
       geom_marimekko(
         aes(fill = Survived, weight = Freq),
         formula = ~ Class | Survived
-      ) +
-      scale_x_marimekko()
-    ggplot_build(p)
+      )
 
     scale_info <- layer_scales(p)$x
     breaks_info <- scale_info$break_info(c(0, 1))
@@ -629,17 +607,18 @@ describe("scale_x_marimekko", {
   it("show_percentages=TRUE renders without error", {
     df <- data.frame(x = c("A", "B"), fill = c("Y", "Y"), weight = c(3, 1))
     p <- ggplot(df) +
-      geom_marimekko(aes(x = x, fill = fill, weight = weight)) +
-      scale_x_marimekko(show_percentages = TRUE)
+      geom_marimekko(aes(fill = fill, weight = weight),
+        formula = ~ x | fill,
+        show_percentages = TRUE
+      )
     expect_no_error(print(p))
   })
 })
 
-describe("scale_y_marimekko", {
+describe("auto y-axis labels", {
   it("renders without error and provides fill category labels", {
     p <- ggplot(titanic_df) +
-      geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-      scale_y_marimekko()
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived)
     expect_no_error(print(p))
 
     scale_info <- layer_scales(p)$y
@@ -647,32 +626,66 @@ describe("scale_y_marimekko", {
     breaks_info <- scale_info$break_info(c(0, 1))
     expect_true(length(breaks_info$major_source) > 0)
   })
+
+
+  it("labels include the original category names", {
+    p <- ggplot(titanic_df) +
+      geom_marimekko(
+        aes(fill = Survived, weight = Freq),
+        formula = ~ Class | Survived
+      )
+
+    scale_info <- layer_scales(p)$y
+    breaks_info <- scale_info$break_info(c(0, 1))
+    labels <- scale_info$get_labels(breaks_info$major_source)
+    expect_true(all(c("No", "Yes") %in% labels))
+  })
 })
 
 describe("theme_marimekko", {
-  it("returns a ggplot2 theme with gridlines and ticks removed", {
+  it("returns a list containing a theme and a fill scale", {
     th <- theme_marimekko()
-    expect_s3_class(th, "theme")
-    expect_identical(th$panel.grid.major.x, element_blank())
-    expect_identical(th$panel.grid.minor, element_blank())
-    expect_identical(th$axis.ticks.x, element_blank())
+    expect_type(th, "list")
+    expect_s3_class(th[[1]], "theme")
+    expect_identical(th[[1]]$panel.grid, element_blank())
+    expect_identical(th[[1]]$axis.ticks, element_blank())
+    expect_s3_class(th[[2]], "Scale")
+  })
+
+  it("sets marimekko_pal colours to each variable level", {
+    p <- ggplot(titanic_df) +
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+      theme_marimekko()
+    built <- ggplot_build(p)
+    fill_values <- unique(built$data[[1]]$fill)
+    expect_true(all(fill_values %in% marimekko_pal))
   })
 })
 
 describe("fortify_marimekko", {
-  it("returns all expected columns with correct dimensions", {
-    result <- fortify_marimekko(titanic_df, Class, Survived, weight = Freq)
+  it("returns all expected columns with formula", {
+    result <- fortify_marimekko(titanic_df,
+      formula = ~ Class | Survived, weight = Freq
+    )
     expected_cols <- c(
-      "x_label", "fill_label", "xmin", "xmax",
-      "ymin", "ymax", "x", "y", "weight", "cond_prop"
+      "Class", "Survived", "fill", "xmin", "xmax",
+      "ymin", "ymax", "x", "y", "weight", ".proportion", ".marginal", ".residuals"
     )
     expect_true(all(expected_cols %in% names(result)))
     expect_equal(nrow(result), 8L) # 4 classes * 2 survival
   })
 
+  it("returns colour column with same values as fill", {
+    result <- fortify_marimekko(titanic_df,
+      formula = ~ Class | Survived, weight = Freq
+    )
+    expect_true("colour" %in% names(result))
+    expect_equal(as.character(result$colour), as.character(result$fill))
+  })
+
   it("tiles fill [0,1] x [0,1] with gap=0", {
-    result <- fortify_marimekko(titanic_df, Class, Survived,
-      weight = Freq, gap = 0
+    result <- fortify_marimekko(titanic_df,
+      formula = ~ Class | Survived, weight = Freq, gap = 0
     )
     expect_equal(min(result$xmin), 0)
     expect_equal(max(result$xmax), 1)
@@ -680,70 +693,34 @@ describe("fortify_marimekko", {
     expect_equal(max(result$ymax), 1)
   })
 
-  it("residuals=TRUE includes .resid with non-zero values", {
-    result <- fortify_marimekko(titanic_df, Class, Survived,
-      weight = Freq, residuals = TRUE
+  it("includes .residuals with non-zero values", {
+    result <- fortify_marimekko(titanic_df,
+      formula = ~ Class | Survived, weight = Freq
     )
-    expect_true(".resid" %in% names(result))
-    expect_true(any(result$.resid != 0))
+    expect_true(".residuals" %in% names(result))
+    expect_true(any(result$.residuals != 0))
   })
 
-  it("standardize=TRUE produces a single unique column width", {
-    result <- fortify_marimekko(titanic_df, Class, Survived,
-      weight = Freq, standardize = TRUE, gap = 0
+  it("3-variable formula produces more tiles", {
+    result <- fortify_marimekko(titanic_df,
+      formula = ~ Class | Survived | Sex, weight = Freq
     )
-    widths <- unique(round(result$xmax - result$xmin, 10))
-    expect_equal(length(widths), 1L)
-    expect_equal(widths, 0.25) # 4 columns, each 1/4
+    expect_gt(nrow(result), 8L)
+    expect_true(all(c("Class", "Survived", "Sex") %in% names(result)))
   })
 
   it("without weight argument uses row counts", {
     df <- data.frame(x = c("A", "A", "B"), fill = c("Y", "N", "Y"))
-    result <- fortify_marimekko(df, x, fill)
+    result <- fortify_marimekko(df, formula = ~ x | fill)
     expect_equal(nrow(result), 3L)
   })
-})
 
-describe("annotate_chisq", {
-  it("returns a LayerInstance and renders as a text annotation", {
-    layer <- annotate_chisq(titanic_df, Class, Survived, weight = Freq)
-    expect_s3_class(layer, "LayerInstance")
-
-    p <- ggplot(titanic_df) +
-      geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-      annotate_chisq(titanic_df, Class, Survived, weight = Freq)
-    expect_no_error(print(p))
-  })
-
-  it("computes correct chi-squared statistic matching stats::chisq.test", {
-    # Build the same contingency table the function uses internally
-    ct <- xtabs(Freq ~ Class + Survived, data = titanic_df)
-    expected_test <- chisq.test(ct)
-
-    # The annotation text should contain the rounded statistic
-    layer <- annotate_chisq(titanic_df, Class, Survived, weight = Freq)
-    # Extract label from the annotation layer params
-    label_text <- layer$aes_params$label
-    expect_true(grepl(
-      paste0("X2 = ", round(expected_test$statistic, 2)),
-      label_text
-    ))
-    expect_true(grepl(
-      paste0("df = ", expected_test$parameter),
-      label_text
-    ))
-  })
-
-  it("works without weight argument", {
-    set.seed(42)
-    df <- data.frame(
-      x = sample(c("A", "B"), 50, replace = TRUE),
-      fill = sample(c("Y", "N"), 50, replace = TRUE)
+  it("drops internal columns (group, PANEL)", {
+    result <- fortify_marimekko(titanic_df,
+      formula = ~ Class | Survived, weight = Freq
     )
-    p <- ggplot(df) +
-      geom_marimekko(aes(x = x, fill = fill)) +
-      annotate_chisq(df, x, fill)
-    expect_no_error(print(p))
+    expect_false("group" %in% names(result))
+    expect_false("PANEL" %in% names(result))
   })
 })
 
@@ -751,40 +728,24 @@ describe("plotly conversion", {
   it("converts geom_marimekko to plotly", {
     skip_if_not_installed("plotly")
     p <- ggplot(titanic_df) +
-      geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-      scale_x_marimekko()
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived)
     expect_no_error(plotly::ggplotly(p))
   })
 
   it("converts geom_marimekko_text to plotly", {
     skip_if_not_installed("plotly")
     p <- ggplot(titanic_df) +
-      geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-      geom_marimekko_text(aes(
-        x = Class, fill = Survived, weight = Freq,
-        label = after_stat(weight)
-      ))
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+      geom_marimekko_text(aes(label = after_stat(weight)))
     expect_no_error(plotly::ggplotly(p))
   })
 
   it("converts geom_marimekko_label to plotly (warns for GeomLabel)", {
     skip_if_not_installed("plotly")
     p <- ggplot(titanic_df) +
-      geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-      geom_marimekko_label(aes(
-        x = Class, fill = Survived, weight = Freq,
-        label = after_stat(weight)
-      ))
+      geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+      geom_marimekko_label(aes(label = after_stat(weight)))
     suppressWarnings(expect_no_error(plotly::ggplotly(p)))
-  })
-
-  it("converts geom_marimekko_jitter to plotly", {
-    skip_if_not_installed("plotly")
-    df <- data.frame(x = c("A", "B"), fill = c("Y", "Y"), weight = c(5, 5))
-    p <- ggplot(df) +
-      geom_marimekko(aes(x = x, fill = fill, weight = weight)) +
-      geom_marimekko_jitter(aes(x = x, fill = fill, weight = weight), seed = 1)
-    expect_no_error(plotly::ggplotly(p))
   })
 })
 
@@ -793,8 +754,7 @@ describe("visual regression", {
     skip_if_not_installed("vdiffr")
     vdiffr::expect_doppelganger("titanic-basic", {
       ggplot(titanic_df) +
-        geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-        scale_x_marimekko() +
+        geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
         labs(y = "Proportion")
     })
   })
@@ -803,8 +763,7 @@ describe("visual regression", {
     skip_if_not_installed("vdiffr")
     vdiffr::expect_doppelganger("titanic-no-gap", {
       ggplot(titanic_df) +
-        geom_marimekko(aes(x = Class, fill = Survived, weight = Freq), gap = 0) +
-        scale_x_marimekko()
+        geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived, gap = 0)
     })
   })
 
@@ -812,12 +771,8 @@ describe("visual regression", {
     skip_if_not_installed("vdiffr")
     vdiffr::expect_doppelganger("titanic-text-labels", {
       ggplot(titanic_df) +
-        geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-        geom_marimekko_text(aes(
-          x = Class, fill = Survived, weight = Freq,
-          label = after_stat(weight)
-        )) +
-        scale_x_marimekko()
+        geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+        geom_marimekko_text(aes(label = after_stat(weight)))
     })
   })
 
@@ -825,9 +780,7 @@ describe("visual regression", {
     skip_if_not_installed("vdiffr")
     vdiffr::expect_doppelganger("titanic-themed", {
       ggplot(titanic_df) +
-        geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-        scale_x_marimekko() +
-        scale_y_marimekko() +
+        geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
         theme_marimekko()
     })
   })
@@ -836,10 +789,10 @@ describe("visual regression", {
     skip_if_not_installed("vdiffr")
     vdiffr::expect_doppelganger("titanic-red-borders", {
       ggplot(titanic_df) +
-        geom_marimekko(aes(x = Class, fill = Survived, weight = Freq),
+        geom_marimekko(aes(fill = Survived, weight = Freq),
+          formula = ~ Class | Survived,
           colour = "red", alpha = 0.5
-        ) +
-        scale_x_marimekko()
+        )
     })
   })
 
@@ -847,19 +800,8 @@ describe("visual regression", {
     skip_if_not_installed("vdiffr")
     vdiffr::expect_doppelganger("titanic-faceted", {
       ggplot(titanic_df) +
-        geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-        facet_wrap(~Sex) +
-        scale_x_marimekko()
-    })
-  })
-
-  it("chi-squared annotation", {
-    skip_if_not_installed("vdiffr")
-    vdiffr::expect_doppelganger("titanic-chisq", {
-      ggplot(titanic_df) +
-        geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-        scale_x_marimekko() +
-        annotate_chisq(titanic_df, Class, Survived, weight = Freq)
+        geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+        facet_wrap(~Sex)
     })
   })
 
@@ -867,8 +809,76 @@ describe("visual regression", {
     skip_if_not_installed("vdiffr")
     vdiffr::expect_doppelganger("titanic-x-percentages", {
       ggplot(titanic_df) +
-        geom_marimekko(aes(x = Class, fill = Survived, weight = Freq)) +
-        scale_x_marimekko(show_percentages = TRUE)
+        geom_marimekko(aes(fill = Survived, weight = Freq),
+          formula = ~ Class | Survived,
+          show_percentages = TRUE
+        )
     })
+  })
+})
+
+describe("zero-weight edge cases", {
+  it("returns empty plot when all weights are zero", {
+    df <- data.frame(
+      x = factor(c("A", "B")),
+      fill = factor(c("Y", "N")),
+      weight = c(0, 0)
+    )
+    d <- build_marimekko(df, aes(fill = fill, weight = weight), formula = ~ x | fill)
+    expect_true(is.null(d) || nrow(d) == 0)
+  })
+})
+
+describe("colour and fill aesthetics", {
+  it("returns NA colour for all tiles when colour is not specified", {
+    d <- build_marimekko(
+      titanic_df,
+      aes(fill = Survived, weight = Freq),
+      formula = ~ Class | Survived
+    )
+    expect_true(all(is.na(d$colour)))
+  })
+
+  it("returns 'white' colour for all tiles when colour='white' is specified", {
+    d <- build_marimekko(
+      titanic_df,
+      aes(fill = Survived, weight = Freq),
+      formula = ~ Class | Survived,
+      colour = "white"
+    )
+    expect_true(all(d$colour == "white"))
+  })
+
+  it("returns distinct colour per Class level when colour is mapped to variable in aes()", {
+    d <- build_marimekko(
+      titanic_df,
+      aes(fill = Survived, colour = Class, weight = Freq),
+      formula = ~ Class | Survived
+    )
+    expect_identical(
+      d$colour,
+      c(
+        "#F8766D", "#F8766D", "#7CAE00", "#7CAE00", "#00BFC4", "#00BFC4", "#C77CFF", "#C77CFF"
+      )
+    )
+  })
+
+  it("returns distinct fill per Class level when fill is mapped to variable in aes()", {
+    d <- build_marimekko(
+      titanic_df,
+      aes(fill = Survived, weight = Freq),
+      formula = ~ Class | Survived
+    )
+    expect_identical(
+      d$fill,
+      c("#F8766D", "#00BFC4", "#F8766D", "#00BFC4", "#F8766D", "#00BFC4", "#F8766D", "#00BFC4")
+    )
+  })
+})
+
+describe("marimekko_pal", {
+  it("contains 8 valid hex colour codes", {
+    expect_length(marimekko_pal, 8)
+    expect_true(all(grepl("^#[0-9A-Fa-f]{6}$", marimekko_pal)))
   })
 })

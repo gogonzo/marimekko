@@ -6,22 +6,20 @@
 \usage{
 fortify_marimekko(
   data,
-  x,
-  fill,
+  formula,
   weight = NULL,
   gap = 0.01,
   gap_x = NULL,
   gap_y = NULL,
-  standardize = FALSE,
-  residuals = FALSE
+  standardize = FALSE
 )
 }
 \arguments{
 \item{data}{A data frame.}
 
-\item{x}{Name of the categorical x variable (unquoted or string).}
-
-\item{fill}{Name of the categorical fill variable (unquoted or string).}
+\item{formula}{A one-sided formula specifying the mosaic hierarchy,
+using the same syntax as \code{\link[=geom_marimekko]{geom_marimekko()}}.
+Example: \code{~ Class | Survived}.}
 
 \item{weight}{Name of the weight variable (unquoted or string), or
 \code{NULL} for unweighted counts. Default \code{NULL}.}
@@ -33,20 +31,20 @@ fortify_marimekko(
 \item{gap_y}{Numeric. Vertical gap. Overrides \code{gap} for y. Default \code{NULL}.}
 
 \item{standardize}{Logical. Equal-width columns. Default \code{FALSE}.}
-
-\item{residuals}{Logical. Include Pearson residuals. Default \code{FALSE}.}
 }
 \value{
-A data frame with columns: \code{x_label}, \code{fill_label}, \code{xmin},
-\code{xmax}, \code{ymin}, \code{ymax}, \code{x}, \code{y}, \code{weight}, \code{cond_prop}, and
-optionally \code{.resid}.
+A data frame with columns for each formula variable, plus
+\code{fill}, \code{colour}, \code{xmin}, \code{xmax}, \code{ymin}, \code{ymax}, \code{x}, \code{y},
+\code{weight}, \code{.proportion}, \code{.marginal}, and \code{.residuals}.
 }
 \description{
 Compute marimekko tile rectangles as a data frame
 }
 \examples{
 titanic <- as.data.frame(Titanic)
-fortify_marimekko(titanic, Class, Survived, weight = Freq)
-fortify_marimekko(titanic, Class, Survived, weight = Freq, residuals = TRUE)
+fortify_marimekko(titanic, formula = ~ Class | Survived, weight = Freq)
+
+# 3-variable formula
+fortify_marimekko(titanic, formula = ~ Class | Survived | Sex, weight = Freq)
 
 }

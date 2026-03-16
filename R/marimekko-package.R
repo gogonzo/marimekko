@@ -2,7 +2,6 @@
 "_PACKAGE"
 
 #' @import ggplot2
-#' @importFrom rlang quo_get_expr
 #' @importFrom stats aggregate chisq.test
 NULL
 
