@@ -1,78 +1,76 @@
-# Getting started with mekko
+# Getting started with marimekko
 
-## What is a Marimekko plot?
+## What is a marimekko plot?
 
-A Marimekko (or mosaic) plot is a two-dimensional visualization of a
+A marimekko (or mosaic) plot is a two-dimensional visualization of a
 contingency table. Each column represents a category of one variable,
 and the segments within each column represent categories of a second
 variable: - **Column widths** are proportional to the marginal counts of
 the x variable. - **Segment heights** within each column are
 proportional to the conditional counts of the fill variable given x.
 
-The `mekko` package provides this as a native ggplot2 layer, so you can
-combine it with any other ggplot2 functionality (facets, themes,
+The `marimekko` package provides this as a native ggplot2 layer, so you
+can combine it with any other ggplot2 functionality (facets, themes,
 annotations, etc.).
 
 ## Installation
 
 ``` r
 # From CRAN
-install.packages("mekko")
+install.packages("marimekko")
 
 # From GitHub (when published)
-devtools::install_github("gogonzo/mekko")
+devtools::install_github("gogonzo/marimekko")
 ```
 
-## Your first Marimekko plot
+## Your first marimekko plot
 
 The built-in `Titanic` dataset records survival counts by class, sex,
 and age. Let’s visualize survival by passenger class.
 
 ``` r
 library(ggplot2)
-library(mekko)
+library(marimekko)
 
 titanic <- as.data.frame(Titanic)
 
 ggplot(titanic) +
-  geom_mekko(aes(x = Class, fill = Survived, weight = Freq)) +
-  scale_x_mekko() +
-  labs(title = "Titanic survival by class", y = "Proportion")
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+  labs(title = "Titanic survival by class")
 ```
 
 ![](getting-started_files/figure-html/basic-1.png)
 
-Three components are at work:
+Two components are at work:
 
-1.  **[`geom_mekko()`](../reference/geom_mekko.md)** computes tile
-    positions from your data. The `x` aesthetic defines the columns,
-    `fill` defines the segments, and `weight` provides the counts.
-2.  **[`scale_x_mekko()`](../reference/scale_x_mekko.md)** labels the
-    x-axis with category names at each column’s midpoint.
-3.  Standard ggplot2 functions
+1.  **[`geom_marimekko()`](../reference/geom_marimekko.md)** computes
+    tile positions from your data. The `formula` defines the variables
+    (columns and segments), `fill` defines the segment colours, and
+    `weight` provides the counts. Axis labels are automatically added.
+2.  Standard ggplot2 functions
     ([`labs()`](https://ggplot2.tidyverse.org/reference/labs.html),
     [`theme()`](https://ggplot2.tidyverse.org/reference/theme.html),
     etc.) work as usual.
 
 ## Aesthetics
 
-[`geom_mekko()`](../reference/geom_mekko.md) understands these
-aesthetics:
+[`geom_marimekko()`](../reference/geom_marimekko.md) understands these
+aesthetics and parameters:
 
-| Aesthetic | Required | Description                       |
-|-----------|----------|-----------------------------------|
-| `x`       | yes      | Categorical variable for columns  |
-| `fill`    | yes      | Categorical variable for segments |
-| `weight`  | no       | Numeric weight/count (default 1)  |
+| Parameter / Aesthetic | Required | Description                                                                  |
+|-----------------------|----------|------------------------------------------------------------------------------|
+| `formula`             | yes      | Formula specifying variables, e.g. `~ X \| Y`                                |
+| `fill`                | no       | Categorical variable for segment colours (defaults to last formula variable) |
+| `weight`              | no       | Numeric weight/count (default 1)                                             |
 
 If your data already has one row per observation (no aggregation
 needed), omit `weight`:
 
 ``` r
 ggplot(mtcars) +
-  geom_mekko(aes(x = factor(cyl), fill = factor(gear))) +
-  scale_x_mekko() +
-  labs(x = "Cylinders", fill = "Gears")
+  geom_marimekko(aes(fill = factor(gear)),
+    formula = ~ cyl | gear
+  )
 ```
 
 ![](getting-started_files/figure-html/unweighted-1.png)
@@ -84,10 +82,9 @@ plot area. Default is `0.01`.
 
 ``` r
 ggplot(titanic) +
-  geom_mekko(aes(x = Class, fill = Survived, weight = Freq),
-    gap = 0.03
+  geom_marimekko(aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived, gap = 0.03
   ) +
-  scale_x_mekko() +
   labs(title = "Wider gaps (gap = 0.03)")
 ```
 
@@ -97,10 +94,9 @@ Set `gap = 0` for a seamless mosaic:
 
 ``` r
 ggplot(titanic) +
-  geom_mekko(aes(x = Class, fill = Survived, weight = Freq),
-    gap = 0
+  geom_marimekko(aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived, gap = 0
   ) +
-  scale_x_mekko() +
   labs(title = "No gaps")
 ```
 
@@ -108,39 +104,39 @@ ggplot(titanic) +
 
 ## Marginal percentages
 
-[`scale_x_mekko()`](../reference/scale_x_mekko.md) can append marginal
-percentages to the x-axis labels:
+[`geom_marimekko()`](../reference/geom_marimekko.md) can append marginal
+percentages to the x-axis labels via the `show_percentages` parameter:
 
 ``` r
 ggplot(titanic) +
-  geom_mekko(aes(x = Class, fill = Survived, weight = Freq)) +
-  scale_x_mekko(show_percentages = TRUE) +
-  labs(y = "Proportion")
+  geom_marimekko(aes(fill = Survived, weight = Freq),
+    formula = ~ Class | Survived,
+    show_percentages = TRUE
+  )
 ```
 
 ![](getting-started_files/figure-html/pct-1.png)
 
 ## Adding text labels
 
-Use [`geom_mekko_text()`](../reference/geom_mekko_text.md) (or
-[`geom_mekko_label()`](../reference/geom_mekko_label.md) for a boxed
-version) to place labels at tile centers. The `label` aesthetic can
-reference computed variables via
+Use [`geom_marimekko_text()`](../reference/geom_marimekko_text.md) (or
+[`geom_marimekko_label()`](../reference/geom_marimekko_label.md) for a
+boxed version) to place labels at tile centers. Tile positions are read
+automatically from the preceding
+[`geom_marimekko()`](../reference/geom_marimekko.md) layer — only the
+`label` aesthetic is needed. Reference computed variables via
 [`after_stat()`](https://ggplot2.tidyverse.org/reference/aes_eval.html):
 
 - `weight` – the aggregated count for the tile
-- `cond_prop` – the conditional proportion within the column
-- `x_label` – the x category name
-- `fill_label` – the fill category name
+- `cond_prop` / `.proportion` – the conditional proportion within the
+  parent
+- `.residuals` – Pearson residual
+- Original variable columns (e.g. `Class`, `Survived`)
 
 ``` r
 ggplot(titanic) +
-  geom_mekko(aes(x = Class, fill = Survived, weight = Freq)) +
-  geom_mekko_text(aes(
-    x = Class, fill = Survived, weight = Freq,
-    label = after_stat(weight)
-  ), colour = "white") +
-  scale_x_mekko() +
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+  geom_marimekko_text(aes(label = after_stat(weight)), colour = "white") +
   labs(title = "Counts inside tiles")
 ```
 
@@ -150,27 +146,24 @@ Percentage labels:
 
 ``` r
 ggplot(titanic) +
-  geom_mekko(aes(x = Class, fill = Survived, weight = Freq)) +
-  geom_mekko_text(aes(
-    x = Class, fill = Survived, weight = Freq,
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+  geom_marimekko_text(aes(
     label = after_stat(paste0(round(cond_prop * 100), "%"))
-  ), colour = "white", size = 3) +
-  scale_x_mekko()
+  ), colour = "white", size = 3)
 ```
 
 ![](getting-started_files/figure-html/pct-labels-1.png)
 
 ## Theming
 
-[`theme_mekko()`](../reference/theme_mekko.md) provides a clean, minimal
-theme that removes distracting x-axis gridlines:
+[`theme_marimekko()`](../reference/theme_marimekko.md) provides a clean,
+minimal theme that removes distracting x-axis gridlines:
 
 ``` r
 ggplot(titanic) +
-  geom_mekko(aes(x = Class, fill = Survived, weight = Freq)) +
-  scale_x_mekko() +
-  theme_mekko() +
-  labs(title = "With theme_mekko()")
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+  theme_marimekko() +
+  labs(title = "With theme_marimekko()")
 ```
 
 ![](getting-started_files/figure-html/theme-1.png)
@@ -181,9 +174,8 @@ you can override any element:
 
 ``` r
 ggplot(titanic) +
-  geom_mekko(aes(x = Class, fill = Survived, weight = Freq)) +
-  scale_x_mekko() +
-  theme_mekko() +
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
+  theme_marimekko() +
   theme(legend.position = "bottom")
 ```
 
@@ -191,38 +183,21 @@ ggplot(titanic) +
 
 ## Faceting
 
-[`geom_mekko()`](../reference/geom_mekko.md) supports ggplot2 faceting.
-Each panel gets its own independently proportioned mosaic:
+[`geom_marimekko()`](../reference/geom_marimekko.md) supports ggplot2
+faceting. Each panel gets its own independently proportioned mosaic:
 
 ``` r
 ggplot(as.data.frame(Titanic)) +
-  geom_mekko(aes(x = Class, fill = Survived, weight = Freq)) +
-  scale_x_mekko() +
+  geom_marimekko(aes(fill = Survived, weight = Freq), formula = ~ Class | Survived) +
   facet_wrap(~Sex) +
   labs(title = "Survival by class, faceted by sex")
 ```
 
 ![](getting-started_files/figure-html/facet-1.png)
 
-## Custom colours
-
-Since `fill` is a standard ggplot2 aesthetic, any fill scale works:
-
-``` r
-haireye <- as.data.frame(HairEyeColor[, , 1])
-
-ggplot(haireye) +
-  geom_mekko(aes(x = Hair, fill = Eye, weight = Freq)) +
-  scale_x_mekko() +
-  scale_fill_brewer(palette = "Set2") +
-  labs(title = "Hair vs Eye colour (males)")
-```
-
-![](getting-started_files/figure-html/colours-1.png)
-
 ## Next steps
 
 See [`vignette("advanced-features")`](../articles/advanced-features.md)
-for spine plots, Pearson residuals, jittered points, three-variable
-mosaics, and programmatic data extraction with
-[`fortify_mekko()`](../reference/fortify_mekko.md).
+for spine plots, Pearson residuals, three-variable mosaics, and
+programmatic data extraction with
+[`fortify_marimekko()`](../reference/fortify_marimekko.md).

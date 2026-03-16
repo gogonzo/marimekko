@@ -5,7 +5,12 @@
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<title>Advanced features • mekko</title>
+<title>Advanced features • marimekko</title>
+<!-- favicons --><link rel="icon" type="image/png" sizes="96x96" href="../favicon-96x96.png">
+<link rel="icon" type="”image/svg+xml”" href="../favicon.svg">
+<link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+<link rel="icon" sizes="any" href="../favicon.ico">
+<link rel="manifest" href="../site.webmanifest">
 <script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 <link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet">
 <script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet">
@@ -18,7 +23,7 @@
 
     <nav class="navbar navbar-expand-lg fixed-top bg-primary" data-bs-theme="dark" aria-label="Site navigation"><div class="container">
 
-    <a class="navbar-brand me-2" href="../index.html">mekko</a>
+    <a class="navbar-brand me-2" href="../index.html">marimekko</a>
 
     <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">0.1.0</small>
 
@@ -36,6 +41,7 @@
   <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
 <li><a class="dropdown-item" href="../articles/getting-started.html">Getting started</a></li>
     <li><a class="dropdown-item" href="../articles/advanced-features.html">Advanced features</a></li>
+    <li><a class="dropdown-item" href="../articles/migration-from-ggmosaic-to-marimekko.html">Migration from ggmosaic to marimekko</a></li>
   </ul>
 </li>
       </ul>
@@ -55,8 +61,7 @@
 
 <div class="row">
   <main id="main" class="col-md-9"><div class="page-header">
-
-      <h1>Advanced features</h1>
+      <img src="../logo.svg" class="logo" alt=""><h1>Advanced features</h1>
             
       
 
@@ -67,54 +72,18 @@
     
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org" class="external-link">ggplot2</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">mekko</span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va">marimekko</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">titanic</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">Titanic</span><span class="op">)</span></span></code></pre></div>
-<p>This vignette covers the advanced features of <code>mekko</code>
+<p>This vignette covers the advanced features of <code>marimekko</code>
 beyond the basics shown in <code><a href="../articles/getting-started.html">vignette("getting-started")</a></code>.</p>
 <div class="section level2">
-<h2 id="spine-plots-standardize">Spine plots (standardize)<a class="anchor" aria-label="anchor" href="#spine-plots-standardize"></a>
+<h2 id="basic-marimekko-plot">Basic marimekko plot<a class="anchor" aria-label="anchor" href="#basic-marimekko-plot"></a>
 </h2>
-<p>A spine plot is a Marimekko chart where all columns have equal width.
-This shifts the emphasis from marginal proportions to conditional
-proportions, making it easier to compare segment heights across
-columns.</p>
-<p>Set <code>standardize = TRUE</code>:</p>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
-<span>    standardize <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    title <span class="op">=</span> <span class="st">"Spine plot: equal-width columns"</span>,</span>
-<span>    y <span class="op">=</span> <span class="st">"Conditional proportion"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="advanced-features_files/figure-html/spine-1.png" class="r-plt" alt="" width="672"></p>
-<p>Compare this with the standard Marimekko to see how class sizes
-differ:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p_base</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Proportion"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">p1</span> <span class="op">&lt;-</span> <span class="va">p_base</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Marimekko (proportional widths)"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">p2</span> <span class="op">&lt;-</span> <span class="va">p_base</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
-<span>    standardize <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Spine (equal widths)"</span><span class="op">)</span></span>
-<span></span>
-<span><span class="co"># Side-by-side (requires patchwork or gridExtra)</span></span>
-<span><span class="co"># p1 + p2</span></span>
-<span><span class="va">p1</span></span></code></pre></div>
-<p><img src="advanced-features_files/figure-html/spine-compare-1.png" class="r-plt" alt="" width="672"></p>
-<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">p2</span></span></code></pre></div>
-<p><img src="advanced-features_files/figure-html/spine-compare-2.png" class="r-plt" alt="" width="672"></p>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>, formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span><span class="op">)</span></span></code></pre></div>
+<p><img src="advanced-features_files/figure-html/basic-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="pearson-residuals">Pearson residuals<a class="anchor" aria-label="anchor" href="#pearson-residuals"></a>
@@ -122,107 +91,50 @@ differ:</p>
 <p>Pearson residuals measure how much each cell deviates from the
 independence assumption. Positive residuals indicate more observations
 than expected; negative residuals indicate fewer.</p>
-<p>Set <code>residuals = TRUE</code> to compute residuals. They are
-exposed as the <code>.resid</code> computed variable, which you can map
-to an aesthetic via <code><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat()</a></code>:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<p>Residuals are automatically computed and exposed as the
+<code>.residuals</code> computed variable, which you can map to an
+aesthetic via <code><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat()</a></code>:</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
-<span>      x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span>,</span>
-<span>      alpha <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">.resid</span><span class="op">)</span><span class="op">)</span></span>
+<span>      fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span>,</span>
+<span>      alpha <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">.residuals</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">)</span>,</span>
-<span>    residuals <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_alpha.html" class="external-link">scale_alpha_continuous</a></span><span class="op">(</span>range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.3</span>, <span class="fl">1</span><span class="op">)</span>, guide <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Residual shading: stronger opacity = larger deviation"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="advanced-features_files/figure-html/residuals-1.png" class="r-plt" alt="" width="672"></p>
 <p>You can also map residuals to colour instead of relying on fill:</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
-<span>    residuals <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko_text.html">geom_mekko_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
-<span>    x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span>,</span>
-<span>    label <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">.resid</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
-<span>  <span class="op">)</span>, residuals <span class="op">=</span> <span class="cn">TRUE</span>, colour <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko_text.html">geom_marimekko_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
+<span>    label <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">.residuals</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>, colour <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Pearson residuals as labels"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="advanced-features_files/figure-html/residuals-colour-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">
-<h2 id="chi-squared-test-annotation">Chi-squared test annotation<a class="anchor" aria-label="anchor" href="#chi-squared-test-annotation"></a>
-</h2>
-<p><code><a href="../reference/annotate_chisq.html">annotate_chisq()</a></code> runs a chi-squared test of independence
-and places the result (test statistic, degrees of freedom, p-value) as a
-text annotation:</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
-<span>    residuals <span class="op">=</span> <span class="cn">TRUE</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/annotate_chisq.html">annotate_chisq</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="va">Class</span>, <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Mosaic plot with chi-squared test"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="advanced-features_files/figure-html/chisq-1.png" class="r-plt" alt="" width="672"></p>
-<p>Customize the annotation position and appearance:</p>
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/annotate_chisq.html">annotate_chisq</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="va">Class</span>, <span class="va">Survived</span>,</span>
-<span>    weight <span class="op">=</span> <span class="va">Freq</span>,</span>
-<span>    pos_x <span class="op">=</span> <span class="fl">0.5</span>, pos_y <span class="op">=</span> <span class="fl">0.95</span>, hjust <span class="op">=</span> <span class="fl">0.5</span>,</span>
-<span>    size <span class="op">=</span> <span class="fl">4</span>, fontface <span class="op">=</span> <span class="st">"italic"</span></span>
-<span>  <span class="op">)</span></span></code></pre></div>
-<p><img src="advanced-features_files/figure-html/chisq-custom-1.png" class="r-plt" alt="" width="672"></p>
-</div>
-<div class="section level2">
-<h2 id="jittered-points">Jittered points<a class="anchor" aria-label="anchor" href="#jittered-points"></a>
-</h2>
-<p>For small-to-medium datasets, <code><a href="../reference/geom_mekko_jitter.html">geom_mekko_jitter()</a></code>
-scatters individual data points inside their corresponding mosaic tile.
-Each row is expanded by its weight, so weighted data shows the correct
-number of points.</p>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">ucb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.data.frame.html" class="external-link">as.data.frame</a></span><span class="op">(</span><span class="va">UCBAdmissions</span><span class="op">)</span></span>
-<span><span class="va">ucb_a</span> <span class="op">&lt;-</span> <span class="va">ucb</span><span class="op">[</span><span class="va">ucb</span><span class="op">$</span><span class="va">Dept</span> <span class="op">==</span> <span class="st">"A"</span>, <span class="op">]</span></span>
-<span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">ucb_a</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Gender</span>, fill <span class="op">=</span> <span class="va">Admit</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
-<span>    alpha <span class="op">=</span> <span class="fl">0.3</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko_jitter.html">geom_mekko_jitter</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Gender</span>, fill <span class="op">=</span> <span class="va">Admit</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
-<span>    seed <span class="op">=</span> <span class="fl">42</span>, size <span class="op">=</span> <span class="fl">0.8</span></span>
-<span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"UCB admissions, Dept A: individual applicants"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="advanced-features_files/figure-html/jitter-1.png" class="r-plt" alt="" width="672"></p>
-<p>Set <code>seed</code> for reproducible jitter placement.</p>
-</div>
-<div class="section level2">
 <h2 id="three-variable-nested-mosaic">Three-variable nested mosaic<a class="anchor" aria-label="anchor" href="#three-variable-nested-mosaic"></a>
 </h2>
-<p><code><a href="../reference/geom_mekko_multi.html">geom_mekko_multi()</a></code> adds a third categorical variable
-(<code>split</code>) that subdivides each column horizontally before
-stacking <code>fill</code> vertically:</p>
+<p><code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code> supports multi-variable formulas. A
+three-variable formula (<code>~ X | Y | Z</code>) partitions the plot in
+alternating directions (horizontal, vertical, horizontal):</p>
 <ul>
-<li>Column widths encode <code>x</code> proportions</li>
-<li>Sub-column widths within each column encode conditional
-<code>split</code> proportions given <code>x</code>
-</li>
-<li>Segment heights encode conditional <code>fill</code> proportions
-given <code>x</code> and <code>split</code>
-</li>
+<li>First split: horizontal by <code>X</code> (column widths
+proportional to <code>X</code>)</li>
+<li>Second split: vertical by <code>Y</code> within each column</li>
+<li>Third split: horizontal by <code>Z</code> within each cell</li>
 </ul>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko_multi.html">geom_mekko_multi</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
-<span>    x <span class="op">=</span> <span class="va">Class</span>, split <span class="op">=</span> <span class="va">Sex</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span></span>
-<span>  <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span> <span class="op">|</span> <span class="va">Sex</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Nested mosaic: Class &gt; Sex &gt; Survived"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="advanced-features_files/figure-html/multi-1.png" class="r-plt" alt="" width="672"></p>
 <p>This produces a richer view than faceting because all three variables
@@ -230,82 +142,83 @@ share a single coordinate space, making relative proportions directly
 comparable.</p>
 </div>
 <div class="section level2">
-<h2 id="y-axis-scale">Y-axis scale<a class="anchor" aria-label="anchor" href="#y-axis-scale"></a>
+<h2 id="y-axis-labels">Y-axis labels<a class="anchor" aria-label="anchor" href="#y-axis-labels"></a>
 </h2>
-<p>By default the y-axis shows proportions from 0 to 1.
-<code><a href="../reference/scale_y_mekko.html">scale_y_mekko()</a></code> replaces that with fill category labels at
-segment midpoints:</p>
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_y_mekko.html">scale_y_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Fill labels on y-axis"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="advanced-features_files/figure-html/y-scale-1.png" class="r-plt" alt="" width="672"></p>
-<p>This is most useful when you want to de-emphasize the numeric
-proportions and instead label segments directly.</p>
+<p>By default <code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code> automatically labels both
+axes with category names. The y-axis shows proportions from 0 to 1,
+while the x-axis displays category labels at each column’s midpoint.</p>
 </div>
 <div class="section level2">
 <h2 id="data-extraction-with-fortify">Data extraction with fortify<a class="anchor" aria-label="anchor" href="#data-extraction-with-fortify"></a>
 </h2>
-<p><code><a href="../reference/fortify_mekko.html">fortify_mekko()</a></code> returns computed tile positions as a
-plain data frame without creating a plot. This is useful for:</p>
-<ul>
-<li>Custom downstream analysis</li>
-<li>Manual ggplot2 layer construction</li>
-<li>Exporting tile coordinates</li>
-</ul>
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fortify_mekko.html">fortify_mekko</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="va">Class</span>, <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tiles</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   x_label fill_label      xmin      xmax      ymin      ymax          x</span></span>
-<span><span class="co">#&gt; 1     1st         No 0.0000000 0.1432303 0.0000000 0.3716308 0.07161517</span></span>
-<span><span class="co">#&gt; 5     1st        Yes 0.0000000 0.1432303 0.3816308 1.0000000 0.07161517</span></span>
-<span><span class="co">#&gt; 2     2nd         No 0.1532303 0.2788323 0.0000000 0.5801053 0.21603135</span></span>
-<span><span class="co">#&gt; 6     2nd        Yes 0.1532303 0.2788323 0.5901053 1.0000000 0.21603135</span></span>
-<span><span class="co">#&gt; 3     3rd         No 0.2888323 0.5999727 0.0000000 0.7403966 0.44440254</span></span>
-<span><span class="co">#&gt; 7     3rd        Yes 0.2888323 0.5999727 0.7503966 1.0000000 0.44440254</span></span>
-<span><span class="co">#&gt;           y weight cond_prop</span></span>
-<span><span class="co">#&gt; 1 0.1858154    122 0.3753846</span></span>
-<span><span class="co">#&gt; 5 0.6908154    203 0.6246154</span></span>
-<span><span class="co">#&gt; 2 0.2900526    167 0.5859649</span></span>
-<span><span class="co">#&gt; 6 0.7950526    118 0.4140351</span></span>
-<span><span class="co">#&gt; 3 0.3701983    528 0.7478754</span></span>
-<span><span class="co">#&gt; 7 0.8751983    178 0.2521246</span></span></code></pre></div>
-<p>With residuals:</p>
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tiles_resid</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fortify_mekko.html">fortify_mekko</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="va">Class</span>, <span class="va">Survived</span>,</span>
-<span>  weight <span class="op">=</span> <span class="va">Freq</span>, residuals <span class="op">=</span> <span class="cn">TRUE</span></span>
+<p><code><a href="../reference/fortify_marimekko.html">fortify_marimekko()</a></code> returns computed tile positions as a
+plain data frame without creating a plot. It accepts the same formula
+syntax as <code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code>:</p>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fortify_marimekko.html">fortify_marimekko</a></span><span class="op">(</span><span class="va">titanic</span>,</span>
+<span>  formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span></span>
 <span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tiles_resid</span><span class="op">)</span></span>
-<span><span class="co">#&gt;   x_label fill_label      xmin      xmax      ymin      ymax          x</span></span>
-<span><span class="co">#&gt; 1     1st         No 0.0000000 0.1432303 0.0000000 0.3716308 0.07161517</span></span>
-<span><span class="co">#&gt; 5     1st        Yes 0.0000000 0.1432303 0.3816308 1.0000000 0.07161517</span></span>
-<span><span class="co">#&gt; 2     2nd         No 0.1532303 0.2788323 0.0000000 0.5801053 0.21603135</span></span>
-<span><span class="co">#&gt; 6     2nd        Yes 0.1532303 0.2788323 0.5901053 1.0000000 0.21603135</span></span>
-<span><span class="co">#&gt; 3     3rd         No 0.2888323 0.5999727 0.0000000 0.7403966 0.44440254</span></span>
-<span><span class="co">#&gt; 7     3rd        Yes 0.2888323 0.5999727 0.7503966 1.0000000 0.44440254</span></span>
-<span><span class="co">#&gt;           y weight cond_prop    .resid</span></span>
-<span><span class="co">#&gt; 1 0.1858154    122 0.3753846 -6.607873</span></span>
-<span><span class="co">#&gt; 5 0.6908154    203 0.6246154  9.565772</span></span>
-<span><span class="co">#&gt; 2 0.2900526    167 0.5859649 -1.867159</span></span>
-<span><span class="co">#&gt; 6 0.7950526    118 0.4140351  2.702959</span></span>
-<span><span class="co">#&gt; 3 0.3701983    528 0.7478754  2.289965</span></span>
-<span><span class="co">#&gt; 7 0.8751983    178 0.2521246 -3.315027</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tiles</span><span class="op">)</span></span>
+<span><span class="co">#&gt;              xmin      xmax      ymin      ymax weight fill colour .proportion</span></span>
+<span><span class="co">#&gt; 1st.No  0.0000000 0.1432303 0.0000000 0.3716308    122   No     No   0.3753846</span></span>
+<span><span class="co">#&gt; 1st.Yes 0.0000000 0.1432303 0.3816308 1.0000000    203  Yes    Yes   0.6246154</span></span>
+<span><span class="co">#&gt; 2nd.No  0.1532303 0.2788323 0.0000000 0.5801053    167   No     No   0.5859649</span></span>
+<span><span class="co">#&gt; 2nd.Yes 0.1532303 0.2788323 0.5901053 1.0000000    118  Yes    Yes   0.4140351</span></span>
+<span><span class="co">#&gt; 3rd.No  0.2888323 0.5999727 0.0000000 0.7403966    528   No     No   0.7478754</span></span>
+<span><span class="co">#&gt; 3rd.Yes 0.2888323 0.5999727 0.7503966 1.0000000    178  Yes    Yes   0.2521246</span></span>
+<span><span class="co">#&gt;          .marginal Class Survived          x         y .residuals</span></span>
+<span><span class="co">#&gt; 1st.No  0.05542935   1st       No 0.07161517 0.1858154  -6.607873</span></span>
+<span><span class="co">#&gt; 1st.Yes 0.09223080   1st      Yes 0.07161517 0.6908154   9.565772</span></span>
+<span><span class="co">#&gt; 2nd.No  0.07587460   2nd       No 0.21603135 0.2900526  -1.867159</span></span>
+<span><span class="co">#&gt; 2nd.Yes 0.05361199   2nd      Yes 0.21603135 0.7950526   2.702959</span></span>
+<span><span class="co">#&gt; 3rd.No  0.23989096   3rd       No 0.44440254 0.3701983   2.289965</span></span>
+<span><span class="co">#&gt; 3rd.Yes 0.08087233   3rd      Yes 0.44440254 0.8751983  -3.315027</span></span></code></pre></div>
+<p>Multi-variable formulas work too:</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tiles_3</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fortify_marimekko.html">fortify_marimekko</a></span><span class="op">(</span><span class="va">titanic</span>,</span>
+<span>  formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span> <span class="op">|</span> <span class="va">Sex</span>, weight <span class="op">=</span> <span class="va">Freq</span></span>
+<span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">tiles_3</span><span class="op">)</span></span>
+<span><span class="co">#&gt;                      xmin       xmax      ymin      ymax weight   fill colour</span></span>
+<span><span class="co">#&gt; 1st.No.Male    0.00000000 0.12886214 0.0000000 0.3716308    118   Male   Male</span></span>
+<span><span class="co">#&gt; 1st.No.Female  0.13886214 0.14323035 0.0000000 0.3716308      4 Female Female</span></span>
+<span><span class="co">#&gt; 1st.Yes.Male   0.00000000 0.04069104 0.3816308 1.0000000     62   Male   Male</span></span>
+<span><span class="co">#&gt; 1st.Yes.Female 0.05069104 0.14323035 0.3816308 1.0000000    141 Female Female</span></span>
+<span><span class="co">#&gt; 2nd.No.Male    0.15323035 0.25983339 0.0000000 0.5801053    154   Male   Male</span></span>
+<span><span class="co">#&gt; 2nd.No.Female  0.26983339 0.27883235 0.0000000 0.5801053     13 Female Female</span></span>
+<span><span class="co">#&gt;                .proportion   .marginal Class Survived    Sex          x</span></span>
+<span><span class="co">#&gt; 1st.No.Male     0.96721311 0.053611995   1st       No   Male 0.06443107</span></span>
+<span><span class="co">#&gt; 1st.No.Female   0.03278689 0.001817356   1st       No Female 0.14104625</span></span>
+<span><span class="co">#&gt; 1st.Yes.Male    0.30541872 0.028169014   1st      Yes   Male 0.02034552</span></span>
+<span><span class="co">#&gt; 1st.Yes.Female  0.69458128 0.064061790   1st      Yes Female 0.09696070</span></span>
+<span><span class="co">#&gt; 2nd.No.Male     0.92215569 0.069968196   2nd       No   Male 0.20653187</span></span>
+<span><span class="co">#&gt; 2nd.No.Female   0.07784431 0.005906406   2nd       No Female 0.27433287</span></span>
+<span><span class="co">#&gt;                        y .residuals</span></span>
+<span><span class="co">#&gt; 1st.No.Male    0.1858154 -0.3491072</span></span>
+<span><span class="co">#&gt; 1st.No.Female  0.1858154 -9.5038375</span></span>
+<span><span class="co">#&gt; 1st.Yes.Male   0.6908154  0.5053790</span></span>
+<span><span class="co">#&gt; 1st.Yes.Female 0.6908154 13.7580643</span></span>
+<span><span class="co">#&gt; 2nd.No.Male    0.2900526  2.9817561</span></span>
+<span><span class="co">#&gt; 2nd.No.Female  0.2900526 -6.9363838</span></span></code></pre></div>
 <p>The returned columns are:</p>
 <table class="table">
+<colgroup>
+<col width="38%">
+<col width="61%">
+</colgroup>
 <thead><tr class="header">
 <th>Column</th>
 <th>Description</th>
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td><code>x_label</code></td>
-<td>Category name for the x variable</td>
+<td>Formula variables</td>
+<td>One column per formula variable (e.g. <code>Class</code>,
+<code>Survived</code>)</td>
 </tr>
 <tr class="even">
-<td><code>fill_label</code></td>
-<td>Category name for the fill variable</td>
+<td><code>fill</code></td>
+<td>The fill variable value</td>
 </tr>
 <tr class="odd">
 <td>
@@ -330,60 +243,243 @@ plain data frame without creating a plot. This is useful for:</p>
 <td>Aggregated count</td>
 </tr>
 <tr class="odd">
-<td><code>cond_prop</code></td>
-<td>Conditional proportion within the column</td>
+<td><code>.proportion</code></td>
+<td>Conditional proportion within the parent tile</td>
 </tr>
 <tr class="even">
-<td><code>.resid</code></td>
-<td>Pearson residual (when <code>residuals = TRUE</code>)</td>
+<td><code>.marginal</code></td>
+<td>Proportion of the grand total</td>
+</tr>
+<tr class="odd">
+<td><code>.residuals</code></td>
+<td>Pearson residual</td>
 </tr>
 </tbody>
 </table>
-<p>You can use the fortified data frame to build completely custom
-plots:</p>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="va">tiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fortify_mekko.html">fortify_mekko</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="va">Class</span>, <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span></span>
-<span></span>
-<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">tiles</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_rect</a></span><span class="op">(</span></span>
-<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
-<span>      xmin <span class="op">=</span> <span class="va">xmin</span>, xmax <span class="op">=</span> <span class="va">xmax</span>,</span>
-<span>      ymin <span class="op">=</span> <span class="va">ymin</span>, ymax <span class="op">=</span> <span class="va">ymax</span>,</span>
-<span>      fill <span class="op">=</span> <span class="va">fill_label</span></span>
-<span>    <span class="op">)</span>,</span>
-<span>    colour <span class="op">=</span> <span class="st">"grey30"</span>, linewidth <span class="op">=</span> <span class="fl">0.3</span></span>
+</div>
+<div class="section level2">
+<h2 id="extending-with-custom-ggplot2-layers">Extending with custom ggplot2 layers<a class="anchor" aria-label="anchor" href="#extending-with-custom-ggplot2-layers"></a>
+</h2>
+<p>The companion layers <code><a href="../reference/geom_marimekko_text.html">geom_marimekko_text()</a></code>,
+<code><a href="../reference/geom_marimekko_label.html">geom_marimekko_label()</a></code> automatically read tile positions
+from a preceding <code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code> layer. You only need to
+specify the <code>label</code> aesthetic:</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, label <span class="op">=</span> <span class="va">weight</span><span class="op">)</span>, size <span class="op">=</span> <span class="fl">3</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html" class="external-link">theme_minimal</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="st">"Survived"</span><span class="op">)</span></span></code></pre></div>
+<span>  <span class="fu"><a href="../reference/geom_marimekko_text.html">geom_marimekko_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
+<span>    label <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="va">Class</span>, <span class="va">Survived</span>, <span class="va">weight</span>, sep <span class="op">=</span> <span class="st">"\n"</span><span class="op">)</span><span class="op">)</span></span>
+<span>  <span class="op">)</span>, colour <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">2.5</span><span class="op">)</span></span></code></pre></div>
+<p><img src="advanced-features_files/figure-html/companion-layers-1.png" class="r-plt" alt="" width="672"></p>
+<p>For more control, use <code><a href="../reference/fortify_marimekko.html">fortify_marimekko()</a></code> to pre-compute
+tiles and pass them as <code>data</code> to any standard ggplot2 geom.
+This lets you summarize, filter, or transform the tile data before
+plotting:</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">tiles</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/fortify_marimekko.html">fortify_marimekko</a></span><span class="op">(</span><span class="va">titanic</span>,</span>
+<span>  formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># Highlight cells with significant residuals</span></span>
+<span><span class="va">tiles</span><span class="op">$</span><span class="va">significant</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">tiles</span><span class="op">$</span><span class="va">.residuals</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">2</span></span>
+<span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_text.html" class="external-link">geom_label</a></span><span class="op">(</span></span>
+<span>    data <span class="op">=</span> <span class="va">tiles</span><span class="op">[</span><span class="va">tiles</span><span class="op">$</span><span class="va">significant</span>, <span class="op">]</span>,</span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">x</span>, y <span class="op">=</span> <span class="va">y</span>, label <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste0</a></span><span class="op">(</span><span class="st">"r="</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">.residuals</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    fill <span class="op">=</span> <span class="st">"yellow"</span>, size <span class="op">=</span> <span class="fl">3</span>, fontface <span class="op">=</span> <span class="st">"bold"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Significant deviations from independence (|r| &gt; 2)"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="advanced-features_files/figure-html/fortify-custom-1.png" class="r-plt" alt="" width="672"></p>
+<p>Because <code><a href="../reference/fortify_marimekko.html">fortify_marimekko()</a></code> returns a plain data frame,
+you can use any ggplot2 geom – <code><a href="https://ggplot2.tidyverse.org/reference/geom_segment.html" class="external-link">geom_segment()</a></code>,
+<code><a href="https://ggplot2.tidyverse.org/reference/geom_segment.html" class="external-link">geom_curve()</a></code>, <code><a href="https://ggplot2.tidyverse.org/reference/geom_tile.html" class="external-link">geom_tile()</a></code>,
+<code>ggrepel::geom_label_repel()</code>, etc.</p>
+</div>
+<div class="section level2">
+<h2 id="extending-with-statmarimekkotiles">Extending with <code>StatMarimekkoTiles</code><a class="anchor" aria-label="anchor" href="#extending-with-statmarimekkotiles"></a>
+</h2>
+<p>The exported <code>StatMarimekkoTiles</code> ggproto object lets you
+pair marimekko tile positions with <strong>any</strong> geom. While the
+convenience wrappers <code><a href="../reference/geom_marimekko_text.html">geom_marimekko_text()</a></code> and
+<code><a href="../reference/geom_marimekko_label.html">geom_marimekko_label()</a></code> cover the most common case (text
+overlays), <code>StatMarimekkoTiles</code> gives you full control by
+plugging directly into <code><a href="https://ggplot2.tidyverse.org/reference/layer.html" class="external-link">ggplot2::layer()</a></code>.</p>
+<div class="section level3">
+<h3 id="how-it-works">How it works<a class="anchor" aria-label="anchor" href="#how-it-works"></a>
+</h3>
+<p><code>StatMarimekkoTiles</code> does not compute tile positions
+itself — it reads them from a preceding <code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code>
+layer via an internal shared environment. This means:</p>
+<ol style="list-style-type: decimal">
+<li>A <code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code> layer <strong>must</strong> appear
+before any layer that uses <code>StatMarimekkoTiles</code>.</li>
+<li>The stat returns one row per tile with columns <code>xmin</code>,
+<code>xmax</code>, <code>ymin</code>, <code>ymax</code>, <code>x</code>,
+<code>y</code> (centre), <code>weight</code>, <code>fill</code>,
+<code>.proportion</code>, <code>.residuals</code>, and
+<code>.tooltip</code>.</li>
+<li>You can reference any of these columns in <code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code> via
+<code><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat()</a></code>.</li>
+</ol>
+</div>
+<div class="section level3">
+<h3 id="example-bubble-overlay">Example: bubble overlay<a class="anchor" aria-label="anchor" href="#example-bubble-overlay"></a>
+</h3>
+<p>Map point size to <code>weight</code> to show tile counts as
+bubbles:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span>, alpha <span class="op">=</span> <span class="fl">0.4</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/layer.html" class="external-link">layer</a></span><span class="op">(</span></span>
+<span>    stat <span class="op">=</span> <span class="va">StatMarimekkoTiles</span>,</span>
+<span>    geom <span class="op">=</span> <span class="va">GeomPoint</span>,</span>
+<span>    mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>size <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="va">weight</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">titanic</span>,</span>
+<span>    position <span class="op">=</span> <span class="st">"identity"</span>,</span>
+<span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"white"</span>, alpha <span class="op">=</span> <span class="fl">0.7</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_size.html" class="external-link">scale_size_area</a></span><span class="op">(</span>max_size <span class="op">=</span> <span class="fl">12</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Bubble overlay via StatMarimekkoTiles"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="advanced-features_files/figure-html/stat-tiles-bubble-1.png" class="r-plt" alt="" width="672"></p>
+</div>
+<div class="section level3">
+<h3 id="example-residual-markers">Example: residual markers<a class="anchor" aria-label="anchor" href="#example-residual-markers"></a>
+</h3>
+<p>Colour and size encode deviation from independence:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/layer.html" class="external-link">layer</a></span><span class="op">(</span></span>
+<span>    stat <span class="op">=</span> <span class="va">StatMarimekkoTiles</span>,</span>
+<span>    geom <span class="op">=</span> <span class="va">GeomPoint</span>,</span>
+<span>    mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
+<span>      size <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">.residuals</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>      colour <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="va">.residuals</span> <span class="op">&gt;</span> <span class="fl">0</span>, <span class="st">"over"</span>, <span class="st">"under"</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">titanic</span>,</span>
+<span>    position <span class="op">=</span> <span class="st">"identity"</span>,</span>
+<span>    show.legend <span class="op">=</span> <span class="cn">TRUE</span>,</span>
+<span>    inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>alpha <span class="op">=</span> <span class="fl">0.8</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_manual.html" class="external-link">scale_colour_manual</a></span><span class="op">(</span></span>
+<span>    values <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>over <span class="op">=</span> <span class="st">"tomato"</span>, under <span class="op">=</span> <span class="st">"steelblue"</span><span class="op">)</span>,</span>
+<span>    name <span class="op">=</span> <span class="st">"Deviation"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_size.html" class="external-link">scale_size_continuous</a></span><span class="op">(</span>range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">8</span><span class="op">)</span>, name <span class="op">=</span> <span class="st">"|Residual|"</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Residual markers via StatMarimekkoTiles"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="advanced-features_files/figure-html/stat-tiles-residuals-1.png" class="r-plt" alt="" width="672"></p>
+</div>
+<div class="section level3">
+<h3 id="example-rectangle-outlines">Example: rectangle outlines<a class="anchor" aria-label="anchor" href="#example-rectangle-outlines"></a>
+</h3>
+<p>Use <code>GeomRect</code> to draw highlighted borders around specific
+tiles (e.g. tiles with large residuals):</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/layer.html" class="external-link">layer</a></span><span class="op">(</span></span>
+<span>    stat <span class="op">=</span> <span class="va">StatMarimekkoTiles</span>,</span>
+<span>    geom <span class="op">=</span> <span class="va">GeomRect</span>,</span>
+<span>    mapping <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
+<span>      linewidth <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html" class="external-link">ifelse</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">.residuals</span><span class="op">)</span> <span class="op">&gt;</span> <span class="fl">2</span>, <span class="fl">1.5</span>, <span class="fl">0</span><span class="op">)</span><span class="op">)</span></span>
+<span>    <span class="op">)</span>,</span>
+<span>    data <span class="op">=</span> <span class="va">titanic</span>,</span>
+<span>    position <span class="op">=</span> <span class="st">"identity"</span>,</span>
+<span>    show.legend <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    inherit.aes <span class="op">=</span> <span class="cn">FALSE</span>,</span>
+<span>    params <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span>colour <span class="op">=</span> <span class="st">"red"</span>, fill <span class="op">=</span> <span class="cn">NA</span><span class="op">)</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Highlight tiles with |residual| &gt; 2"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="advanced-features_files/figure-html/stat-tiles-rect-1.png" class="r-plt" alt="" width="672"></p>
+</div>
+<div class="section level3">
+<h3 id="statmarimekkotiles-vs-fortify_marimekko">
+<code>StatMarimekkoTiles</code> vs
+<code>fortify_marimekko()</code><a class="anchor" aria-label="anchor" href="#statmarimekkotiles-vs-fortify_marimekko"></a>
+</h3>
+<p>Both give access to the same computed tile data, but they serve
+different purposes:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr class="header">
+<th></th>
+<th><code>StatMarimekkoTiles</code></th>
+<th><code><a href="../reference/fortify_marimekko.html">fortify_marimekko()</a></code></th>
+</tr></thead>
+<tbody>
+<tr class="odd">
+<td><strong>When</strong></td>
+<td>At render time (reactive)</td>
+<td>Before plotting (static)</td>
+</tr>
+<tr class="even">
+<td><strong>Input</strong></td>
+<td>Reads from a <code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code> layer</td>
+<td>Standalone function call</td>
+</tr>
+<tr class="odd">
+<td><strong>Use case</strong></td>
+<td>Adding companion layers on the same plot</td>
+<td>Pre-processing, filtering, or using tile data outside ggplot2</td>
+</tr>
+<tr class="even">
+<td><strong>Faceting</strong></td>
+<td>Automatically panel-aware</td>
+<td>Manual panel handling</td>
+</tr>
+</tbody>
+</table>
+<p>Use <code>StatMarimekkoTiles</code> when you want to add layers that
+stay in sync with <code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code> parameters. Use
+<code><a href="../reference/fortify_marimekko.html">fortify_marimekko()</a></code> when you need to transform or subset
+the tile data before passing it to a geom.</p>
+</div>
 </div>
 <div class="section level2">
 <h2 id="combining-layers">Combining layers<a class="anchor" aria-label="anchor" href="#combining-layers"></a>
 </h2>
-<p>Because <code>mekko</code> produces standard ggplot2 layers, you can
-freely combine multiple features:</p>
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
+<p>Because <code>marimekko</code> produces standard ggplot2 layers, you
+can freely combine multiple features:</p>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span></span>
 <span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
-<span>      x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span>,</span>
-<span>      alpha <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">.resid</span><span class="op">)</span><span class="op">)</span></span>
+<span>      fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span>,</span>
+<span>      alpha <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/MathFun.html" class="external-link">abs</a></span><span class="op">(</span><span class="va">.residuals</span><span class="op">)</span><span class="op">)</span></span>
 <span>    <span class="op">)</span>,</span>
-<span>    residuals <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span>,</span>
+<span>    show_percentages <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko_text.html">geom_mekko_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
-<span>    x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span>,</span>
-<span>    label <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="va">weight</span><span class="op">)</span></span>
-<span>  <span class="op">)</span>, colour <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">3.5</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span>show_percentages <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko_text.html">geom_marimekko_text</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>label <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="va">weight</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    colour <span class="op">=</span> <span class="st">"white"</span>, size <span class="op">=</span> <span class="fl">3.5</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_alpha.html" class="external-link">scale_alpha_continuous</a></span><span class="op">(</span>range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0.4</span>, <span class="fl">1</span><span class="op">)</span>, guide <span class="op">=</span> <span class="st">"none"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/annotate_chisq.html">annotate_chisq</a></span><span class="op">(</span><span class="va">titanic</span>, <span class="va">Class</span>, <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/theme_mekko.html">theme_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/theme_marimekko.html">theme_marimekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
 <span>    title <span class="op">=</span> <span class="st">"Full-featured mosaic plot"</span>,</span>
-<span>    subtitle <span class="op">=</span> <span class="st">"Residual shading + counts + marginal % + chi-squared test"</span>,</span>
-<span>    y <span class="op">=</span> <span class="st">"Proportion"</span></span>
+<span>    subtitle <span class="op">=</span> <span class="st">"Residual shading + counts + marginal %"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="advanced-features_files/figure-html/combined-1.png" class="r-plt" alt="" width="672"></p>
 </div>
@@ -393,65 +489,83 @@ freely combine multiple features:</p>
 <p>By default, <code>gap</code> controls both horizontal (between
 columns) and vertical (between segments) spacing. Use <code>gap_x</code>
 and <code>gap_y</code> to set them independently:</p>
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
-<span>    gap_x <span class="op">=</span> <span class="fl">0.04</span>, gap_y <span class="op">=</span> <span class="fl">0</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span>, gap_x <span class="op">=</span> <span class="fl">0.04</span>, gap_y <span class="op">=</span> <span class="fl">0</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Wide column gaps, no vertical gaps"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="advanced-features_files/figure-html/gap-xy-1.png" class="r-plt" alt="" width="672"></p>
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
-<span>    gap_x <span class="op">=</span> <span class="fl">0</span>, gap_y <span class="op">=</span> <span class="fl">0.03</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span>, gap_x <span class="op">=</span> <span class="fl">0</span>, gap_y <span class="op">=</span> <span class="fl">0.03</span></span>
 <span>  <span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"No column gaps, visible vertical gaps"</span><span class="op">)</span></span></code></pre></div>
 <p><img src="advanced-features_files/figure-html/gap-xy2-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">
-<h2 id="plotly-interactive-tooltips">Plotly interactive tooltips<a class="anchor" aria-label="anchor" href="#plotly-interactive-tooltips"></a>
+<h2 id="colour-palette">Colour palette<a class="anchor" aria-label="anchor" href="#colour-palette"></a>
 </h2>
-<p><code>StatMarimekko</code> computes a <code>.tooltip</code> variable
-containing a formatted summary of each tile (category names, count, and
-proportion). Map it to the <code>text</code> aesthetic for use with
-<code>plotly::ggplotly()</code>:</p>
+<p><code>marimekko</code> ships with an Marimekko inspired color
+pallette. Use <code><a href="../reference/theme_marimekko.html">theme_marimekko()</a></code> oe use
+<code>scale_fill_manual(palette = marimekko_pal)</code>:</p>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/theme_marimekko.html">theme_marimekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"Earthy Nordic palette"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="advanced-features_files/figure-html/palette-1.png" class="r-plt" alt="" width="672"></p>
+<p>By default, tile borders match the fill colour (borders blend in).
+Set <code>colour</code> explicitly to restore visible borders:</p>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span>, colour <span class="op">=</span> <span class="st">"white"</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/theme_marimekko.html">theme_marimekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span>title <span class="op">=</span> <span class="st">"White borders with marimekko palette"</span><span class="op">)</span></span></code></pre></div>
+<p><img src="advanced-features_files/figure-html/colour-override-1.png" class="r-plt" alt="" width="672"></p>
+</div>
+<div class="section level2">
+<h2 id="plotly-interactivity">Plotly interactivity<a class="anchor" aria-label="anchor" href="#plotly-interactivity"></a>
+</h2>
+<p>marimekko plots work with <code><a href="https://rdrr.io/pkg/plotly/man/ggplotly.html" class="external-link">plotly::ggplotly()</a></code> out of the
+box:</p>
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://plotly-r.com" class="external-link">plotly</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">p</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span></span>
-<span>    x <span class="op">=</span> <span class="va">Class</span>, fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span>,</span>
-<span>    text <span class="op">=</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat</a></span><span class="op">(</span><span class="va">.tooltip</span><span class="op">)</span></span>
-<span>  <span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu">ggplotly</span><span class="op">(</span><span class="va">p</span>, tooltip <span class="op">=</span> <span class="st">"text"</span><span class="op">)</span></span></code></pre></div>
-<p>The <code>.tooltip</code> variable is also available via
-<code><a href="https://ggplot2.tidyverse.org/reference/aes_eval.html" class="external-link">after_stat()</a></code> for custom label construction.</p>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span></span>
+<span>  <span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/plotly/man/ggplotly.html" class="external-link">ggplotly</a></span><span class="op">(</span><span class="va">p</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="in-aesthetic-expressions">In-aesthetic expressions<a class="anchor" aria-label="anchor" href="#in-aesthetic-expressions"></a>
 </h2>
-<p>Unlike some mosaic packages, <code>mekko</code> supports standard
-ggplot2 tidy evaluation inside <code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code>. You can transform
-variables inline:</p>
+<p>Unlike some mosaic packages, <code>marimekko</code> supports
+arbitrary R expressions — both in formulas and inside
+<code><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes()</a></code>:</p>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/geom_mekko.html">geom_mekko</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span>, fill <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">gear</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="../reference/scale_x_mekko.html">scale_x_mekko</a></span><span class="op">(</span><span class="op">)</span> <span class="op">+</span></span>
+<code class="sourceCode R"><span><span class="co"># Expressions work in formulas</span></span>
+<span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">mtcars</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="../reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span>formula <span class="op">=</span> <span class="op">~</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">cyl</span><span class="op">)</span> <span class="op">|</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html" class="external-link">factor</a></span><span class="op">(</span><span class="va">gear</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html" class="external-link">labs</a></span><span class="op">(</span></span>
-<span>    x <span class="op">=</span> <span class="st">"Cylinders"</span>, fill <span class="op">=</span> <span class="st">"Gears"</span>,</span>
-<span>    title <span class="op">=</span> <span class="st">"factor() inside aes() works"</span></span>
+<span>    y <span class="op">=</span> <span class="st">"Gears"</span>, fill <span class="op">=</span> <span class="st">"Gears"</span>,</span>
+<span>    title <span class="op">=</span> <span class="st">"factor() inside formula works"</span></span>
 <span>  <span class="op">)</span></span></code></pre></div>
 <p><img src="advanced-features_files/figure-html/in-aes-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level2">
 <h2 id="namespace-qualified-usage">Namespace-qualified usage<a class="anchor" aria-label="anchor" href="#namespace-qualified-usage"></a>
 </h2>
-<p><code>mekko</code> works correctly when called with <code>::</code>
-notation (e.g., <code><a href="../reference/geom_mekko.html">mekko::geom_mekko()</a></code>) without requiring
-<code><a href="https://rdrr.io/r/base/library.html" class="external-link">library(mekko)</a></code>. This makes it safe to use inside other
+<p><code>marimekko</code> works correctly when called with
+<code>::</code> notation (e.g.,
+<code><a href="../reference/geom_marimekko.html">marimekko::geom_marimekko()</a></code>) without requiring
+<code><a href="https://rdrr.io/r/base/library.html" class="external-link">library(marimekko)</a></code>. This makes it safe to use inside other
 packages via <code>Imports</code> rather than <code>Depends</code>.</p>
 </div>
 <div class="section level2">
@@ -470,49 +584,47 @@ packages via <code>Imports</code> rather than <code>Depends</code>.</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td><code>formula</code></td>
+<td>
+<code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code>, <code><a href="../reference/fortify_marimekko.html">fortify_marimekko()</a></code>
+</td>
+<td>Formula specifying variable hierarchy
+(<code>~ a \| b \| c</code>)</td>
+</tr>
+<tr class="even">
 <td><code>gap</code></td>
 <td>
-<code><a href="../reference/geom_mekko.html">geom_mekko()</a></code>, <code><a href="../reference/geom_mekko_text.html">geom_mekko_text()</a></code>,
-<code><a href="../reference/geom_mekko_label.html">geom_mekko_label()</a></code>, <code><a href="../reference/geom_mekko_jitter.html">geom_mekko_jitter()</a></code>,
-<code><a href="../reference/geom_mekko_multi.html">geom_mekko_multi()</a></code>, <code><a href="../reference/fortify_mekko.html">fortify_mekko()</a></code>
+<code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code>, <code><a href="../reference/fortify_marimekko.html">fortify_marimekko()</a></code>
 </td>
 <td>Spacing between tiles (fraction of plot area)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>gap_x</code></td>
-<td>All geom/stat/fortify functions</td>
+<td>
+<code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code>, <code><a href="../reference/fortify_marimekko.html">fortify_marimekko()</a></code>
+</td>
 <td>Horizontal gap (overrides <code>gap</code> for x)</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td><code>gap_y</code></td>
-<td>All geom/stat/fortify functions</td>
+<td>
+<code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code>, <code><a href="../reference/fortify_marimekko.html">fortify_marimekko()</a></code>
+</td>
 <td>Vertical gap (overrides <code>gap</code> for y)</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td><code>standardize</code></td>
-<td>
-<code><a href="../reference/geom_mekko.html">geom_mekko()</a></code>, <code><a href="../reference/geom_mekko_text.html">geom_mekko_text()</a></code>,
-<code><a href="../reference/geom_mekko_label.html">geom_mekko_label()</a></code>, <code><a href="../reference/geom_mekko_jitter.html">geom_mekko_jitter()</a></code>,
-<code><a href="../reference/fortify_mekko.html">fortify_mekko()</a></code>
-</td>
+<td><code><a href="../reference/fortify_marimekko.html">fortify_marimekko()</a></code></td>
 <td>Equal-width columns (spine plot)</td>
 </tr>
-<tr class="odd">
-<td><code>residuals</code></td>
-<td>
-<code><a href="../reference/geom_mekko.html">geom_mekko()</a></code>, <code><a href="../reference/geom_mekko_text.html">geom_mekko_text()</a></code>,
-<code><a href="../reference/geom_mekko_label.html">geom_mekko_label()</a></code>, <code><a href="../reference/fortify_mekko.html">fortify_mekko()</a></code>
-</td>
-<td>Compute Pearson residuals</td>
-</tr>
 <tr class="even">
-<td><code>seed</code></td>
-<td><code><a href="../reference/geom_mekko_jitter.html">geom_mekko_jitter()</a></code></td>
-<td>Reproducible jitter placement</td>
+<td><code>colour</code></td>
+<td><code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code></td>
+<td>Tile border colour. Default <code>NULL</code> (matches fill)</td>
 </tr>
 <tr class="odd">
 <td><code>show_percentages</code></td>
-<td><code><a href="../reference/scale_x_mekko.html">scale_x_mekko()</a></code></td>
+<td><code><a href="../reference/geom_marimekko.html">geom_marimekko()</a></code></td>
 <td>Append marginal % to x-axis labels</td>
 </tr>
 </tbody>
@@ -525,7 +637,7 @@ packages via <code>Imports</code> rather than <code>Depends</code>.</p>
 
 
     <footer><div class="pkgdown-footer-left">
-  <p>Developed by Dawid Kaledkowski.</p>
+  <p>Developed by Dawid Kałędkowski.</p>
 </div>
 
 <div class="pkgdown-footer-right">
