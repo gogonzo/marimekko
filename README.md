@@ -63,17 +63,17 @@ within each column), the third switches back to horizontal, and so on.
 
 | Operator | Meaning                                                                                             |
 | -------- | --------------------------------------------------------------------------------------------------- |
-| `\|`     | Separates groups of variables. Each `\|` flips the split direction (horizontal ↔ vertical).         |
+| `|`     | Separates groups of variables. Each `|` flips the split direction (horizontal ↔ vertical).         |
 | `+`      | Combines variables within the same group — they split in the **same** direction, one after another. |
 
 ### Examples
 
 | Formula         | 1st split                             | 2nd split                                | 3rd split         | Layout              |
 | --------------- | ------------------------------------- | ---------------------------------------- | ----------------- | ------------------- |
-| `~ a \| b`      | `a` → columns (horizontal)            | `b` → rows within each column (vertical) | —                 | Standard mosaic     |
-| `~ a \| b \| c` | `a` → columns                         | `b` → rows                               | `c` → sub-columns | Alternating 3-level |
-| `~ a + b \| c`  | `a` → columns, then `b` → sub-columns | `c` → rows                               | —                 | Double decker       |
-| `~ a \| b + c`  | `a` → columns                         | `b` → rows, then `c` → sub-rows          | —                 | Multiple vertical   |
+| `~ a | b`      | `a` → columns (horizontal)            | `b` → rows within each column (vertical) | —                 | Standard mosaic     |
+| `~ a | b | c` | `a` → columns                         | `b` → rows                               | `c` → sub-columns | Alternating 3-level |
+| `~ a + b | c`  | `a` → columns, then `b` → sub-columns | `c` → rows                               | —                 | Double decker       |
+| `~ a | b + c`  | `a` → columns                         | `b` → rows, then `c` → sub-rows          | —                 | Multiple vertical   |
 
 ### Expressions in formulas
 
