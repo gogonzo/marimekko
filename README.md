@@ -63,17 +63,17 @@ within each column), the third switches back to horizontal, and so on.
 
 | Operator | Meaning                                                                                             |
 | -------- | --------------------------------------------------------------------------------------------------- |
-| `|`     | Separates groups of variables. Each `|` flips the split direction (horizontal ↔ vertical).         |
+| <code>&#124;</code>     | Separates groups of variables. Each `|` flips the split direction (horizontal ↔ vertical).         |
 | `+`      | Combines variables within the same group — they split in the **same** direction, one after another. |
 
 ### Examples
 
 | Formula         | 1st split                             | 2nd split                                | 3rd split         | Layout              |
 | --------------- | ------------------------------------- | ---------------------------------------- | ----------------- | ------------------- |
-| `~ a | b`      | `a` → columns (horizontal)            | `b` → rows within each column (vertical) | —                 | Standard mosaic     |
-| `~ a | b | c` | `a` → columns                         | `b` → rows                               | `c` → sub-columns | Alternating 3-level |
-| `~ a + b | c`  | `a` → columns, then `b` → sub-columns | `c` → rows                               | —                 | Double decker       |
-| `~ a | b + c`  | `a` → columns                         | `b` → rows, then `c` → sub-rows          | —                 | Multiple vertical   |
+| <code>~ a &#124; b </code>      | `a` → columns (horizontal)            | `b` → rows within each column (vertical) | —                 | Standard mosaic     |
+| <code>~ a &#124; b &#124; c</code>  | `a` → columns                         | `b` → rows                               | `c` → sub-columns | Alternating 3-level |
+| <code>~ a + b &#124; c</code>   | `a` → columns, then `b` → sub-columns | `c` → rows                               | —                 | Double decker       |
+| <code>~ a &#124; b + c</code>   | `a` → columns                         | `b` → rows, then `c` → sub-rows          | —                 | Multiple vertical   |
 
 ### Expressions in formulas
 
