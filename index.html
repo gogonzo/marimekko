@@ -263,13 +263,14 @@
 <div class="section level3">
 <h3 id="marginal-percentages-on-x-axis">Marginal percentages on x-axis<a class="anchor" aria-label="anchor" href="#marginal-percentages-on-x-axis"></a>
 </h3>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">ggplot</span>(titanic) <span class="sc">+</span></span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">geom_marimekko</span>(</span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>    <span class="fu">aes</span>(<span class="at">fill =</span> Survived, <span class="at">weight =</span> Freq),</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>    <span class="at">formula =</span> <span class="sc">~</span> Class <span class="sc">|</span> Survived</span>
-<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a>    <span class="at">show_percentages =</span> <span class="cn">TRUE</span></span>
-<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb4-7"><a href="#cb4-7" tabindex="-1"></a>  <span class="fu">theme_marimekko</span>()</span></code></pre></div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html" class="external-link">ggplot</a></span><span class="op">(</span><span class="va">titanic</span><span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="reference/geom_marimekko.html">geom_marimekko</a></span><span class="op">(</span></span>
+<span>    <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html" class="external-link">aes</a></span><span class="op">(</span>fill <span class="op">=</span> <span class="va">Survived</span>, weight <span class="op">=</span> <span class="va">Freq</span><span class="op">)</span>,</span>
+<span>    formula <span class="op">=</span> <span class="op">~</span> <span class="va">Class</span> <span class="op">|</span> <span class="va">Survived</span>,</span>
+<span>    show_percentages <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span>  <span class="op">)</span> <span class="op">+</span></span>
+<span>  <span class="fu"><a href="reference/theme_marimekko.html">theme_marimekko</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="count-labels">Count labels<a class="anchor" aria-label="anchor" href="#count-labels"></a>
