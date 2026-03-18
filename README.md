@@ -106,7 +106,7 @@ Variables in the formula can be arbitrary R expressions:
 ggplot(titanic) +
   geom_marimekko(
     aes(fill = Survived, weight = Freq),
-    formula = ~ Class | Survived
+    formula = ~ Class | Survived,
     show_percentages = TRUE
   ) +
   theme_marimekko()
