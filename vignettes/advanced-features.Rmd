@@ -56,7 +56,7 @@ ggplot(titanic) +
   labs(title = "Residual shading: stronger opacity = larger deviation")
 ```
 
-You can also map residuals to colour instead of relying on fill:
+You can also map residuals to labels instead of relying on fill:
 
 ```{r residuals-colour}
 ggplot(titanic) +
@@ -347,8 +347,8 @@ ggplot(titanic) +
 
 ## Colour palette
 
-`marimekko` ships with an Marimekko inspired color pallette. Use `theme_marimekko()` oe use 
-`scale_fill_manual(palette = marimekko_pal)`:
+`marimekko` ships with an Marimekko inspired color pallette. Use `theme_marimekko()` to use 
+`scale_fill_manual(values = marimekko_pal)`:
 
 ```{r palette}
 ggplot(titanic) +
